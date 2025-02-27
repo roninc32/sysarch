@@ -51,7 +51,7 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-blue-100 min-h-0 flex flex-col">
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-16">
@@ -127,7 +127,7 @@ $conn->close();
             <!-- Student Information -->
             <div class="col-span-1">
                 <div class="bg-gray-50 p-6 rounded-lg shadow-lg">
-                    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Student Information</h1>
+                    <h1 class="text-3xl bg-blue-200 font-bold mb-6 text-center text-gray-800">Student Information</h1>
                     <div class="profile-image-container flex justify-center mb-6">
                         <img src="<?php echo $profile_image; ?>" alt="Profile Image" class="w-32 h-32 rounded-full border-4 border-gray-300">
                     </div>
