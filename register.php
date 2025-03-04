@@ -2,6 +2,7 @@
 include 'config.php';
 
 $passwordError = "";
+$accountError = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $id_number = $_POST["id_number"];
@@ -19,14 +20,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($password !== $confirm_password) {
         $passwordError = "Passwords do not match.";
     } else {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-        $sql = "INSERT INTO users (id_number, last_name, first_name, middle_name, course_level, password, email, course, address, profile_image) VALUES ('$id_number', '$last_name', '$first_name', '$middle_name', '$course_level', '$hashed_password', '$email', '$course', '$address', '$profile_image')";
+        // Check if the account already exists
+        $sql_check = "SELECT * FROM users WHERE id_number='$id_number' OR email='$email'";
+        $result_check = $conn->query($sql_check);
 
-        if ($conn->query($sql) === TRUE) {
-            header("Location: login.php");
-            exit();
+        if ($result_check->num_rows > 0) {
+            $accountError = "An account with this ID number or email already exists.";
         } else {
-            echo "Error: " . $sql . "<br>" . $conn->error;
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO users (id_number, last_name, first_name, middle_name, course_level, password, email, course, address, profile_image) VALUES ('$id_number', '$last_name', '$first_name', '$middle_name', '$course_level', '$hashed_password', '$email', '$course', '$address', '$profile_image')";
+
+            if ($conn->query($sql) === TRUE) {
+                header("Location: login.php");
+                exit();
+            } else {
+                echo "Error: " . $sql . "<br>" . $conn->error;
+            }
         }
 
         $conn->close();
@@ -94,6 +103,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input type="password" id="confirm_password" name="confirm_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
             </div>
             <span class="text-red-500 text-sm"><?php echo isset($passwordError) ? $passwordError : ''; ?></span>
+            <span class="text-red-500 text-sm"><?php echo isset($accountError) ? $accountError : ''; ?></span>
             <div>
                 <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
                 <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">

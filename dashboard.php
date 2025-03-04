@@ -14,7 +14,7 @@ $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $profile_image = isset($row["profile_image"]) ? $row["profile_image"] : 'assets/images/profile.jpg';
+    $profile_image = isset($row["profile_image"]) && !empty($row["profile_image"]) ? $row["profile_image"] : 'assets/images/profile.jpg';
     $last_name = $row["last_name"];
     $first_name = $row["first_name"];
     $middle_name = $row["middle_name"];
@@ -51,7 +51,7 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
-<body class="bg-blue-100 min-h-0 flex flex-col">
+<body class="bg-blue-50 min-h-0 flex flex-col">
     <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-16">
@@ -122,63 +122,72 @@ $conn->close();
         </div>
     </nav>
 
-    <div class="container max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div class="container mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Student Information -->
-            <div class="col-span-1">
-                <div class="bg-gray-50 p-6 rounded-lg shadow-lg">
-                    <h1 class="text-3xl bg-blue-200 font-bold mb-6 text-center text-gray-800">Student Information</h1>
-                    <div class="profile-image-container flex justify-center mb-6">
-                        <img src="<?php echo $profile_image; ?>" alt="Profile Image" class="w-32 h-32 rounded-full border-4 border-gray-300">
+            <div class="col-auto">
+                <div class="bg-blue-100 rounded-lg shadow-lg">
+                    <div class="bg-blue-200 p-6 rounded-t-lg sticky top-0 z-10">
+                        <h1 class="text-3xl font-bold text-center text-gray-800">Student Information</h1>
                     </div>
-                    <div class="student-info space-y-4">
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-700 w-1/3">Name:</span>
-                            <span class="text-gray-900"><?php echo $first_name . ' ' . $middle_name . ' ' . $last_name; ?></span>
+                    <div class="p-6">
+                        <div class="profile-image-container flex justify-center mb-6">
+                            <img src="<?php echo $profile_image; ?>" alt="Profile Image" class="w-32 h-32 rounded-full border-4 border-gray-300">
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-700 w-1/3">Course Level:</span>
-                            <span class="text-gray-900"><?php echo $course_level; ?></span>
+                        <div class="student-info space-y-4">
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-700 w-1/3">Name:</span>
+                                <span class="text-gray-900"><?php echo $first_name . ' ' . $middle_name . ' ' . $last_name; ?></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-700 w-1/3">Course Level:</span>
+                                <span class="text-gray-900"><?php echo $course_level; ?></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-700 w-1/3">Course:</span>
+                                <span class="text-gray-900"><?php echo $course; ?></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-700 w-1/3">Email:</span>
+                                <span class="text-gray-900"><?php echo $email; ?></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-700 w-1/3">Address:</span>
+                                <span class="text-gray-900"><?php echo $address; ?></span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="font-semibold text-gray-700 w-1/3">Sessions Left:</span>
+                                <span class="text-gray-900"><?php echo $sessions_left; ?></span>
+                            </div>
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-700 w-1/3">Course:</span>
-                            <span class="text-gray-900"><?php echo $course; ?></span>
+                        <div class="flex justify-between mt-6">
+                            <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
                         </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-700 w-1/3">Email:</span>
-                            <span class="text-gray-900"><?php echo $email; ?></span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-700 w-1/3">Address:</span>
-                            <span class="text-gray-900"><?php echo $address; ?></span>
-                        </div>
-                        <div class="flex items-center">
-                            <span class="font-semibold text-gray-700 w-1/3">Sessions Left:</span>
-                            <span class="text-gray-900"><?php echo $sessions_left; ?></span>
-                        </div>
-                    </div>
-                    <div class="flex justify-between mt-6">
-                        <a href="logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
-                        <!-- Remove Edit Profile Picture button -->
                     </div>
                 </div>
             </div>
 
             <!-- Announcements -->
-            <div class="col-span-1">
-                <div class="bg-gray-50 p-6 rounded-lg shadow-lg">
-                    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Announcements</h1>
-                    <div class="space-y-4">
-                        <p class="text-lg">No new announcements.</p>
+            <div class="col-auto">
+                <div class="bg-blue-100 rounded-lg shadow-lg">
+                    <div class="bg-blue-200 p-6 rounded-t-lg sticky top-0 z-10">
+                        <h1 class="text-3xl font-bold text-center text-gray-800">Announcements</h1>
+                    </div>
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <p class="text-lg">No new announcements.</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Rules and Regulations -->
             <div class="col-span-1">
-                <div class="bg-gray-50 p-6 rounded-lg shadow-lg h-96 overflow-y-auto">
-                    <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Rules and Regulations</h1>
-                    <div class="space-y-4 text-lg">
+                <div class="bg-blue-100 rounded-lg shadow-lg h-96 overflow-y-auto">
+                    <div class="bg-blue-200 p-6 rounded-t-lg sticky top-0 z-10">
+                        <h1 class="text-3xl font-bold text-center text-gray-800">Rules and Regulations</h1>
+                    </div>
+                    <div class="p-6 space-y-4 text-lg">
                         <p><strong>LABORATORY RULES AND REGULATIONS</strong></p>
                         <p>To avoid embarrassment and maintain camaraderie with your friends and superiors at our laboratories, please observe the following:</p>
                         <ul class="list-disc pl-6">

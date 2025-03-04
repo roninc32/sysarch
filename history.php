@@ -31,7 +31,7 @@ $conn->close();
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-blue-100 min-h-screen flex flex-col">
+<body class="bg-blue-50 min-h-screen flex flex-col">
 <nav class="bg-white shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-16">
@@ -103,46 +103,52 @@ $conn->close();
         </div>
     </nav>
 
-    <div class="container max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
-        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Reservation History</h1>
-        <div class="mb-4">
-            <input type="text" id="search" placeholder="Search..." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-        </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-300">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">ID Number</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Name</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Sit-in Purpose</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Laboratory Number</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Login Time</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Logout Time</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Date</th>
-                        <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="reservationTable">
-                    <?php if (empty($reservations)): ?>
-                        <tr>
-                            <td colspan="8" class="text-center py-4 text-gray-500">No reservation history found.</td>
-                        </tr>
-                    <?php else: ?>
-                        <?php foreach ($reservations as $reservation): ?>
-                            <tr class="hover:bg-gray-100">
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['id_number']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['name']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['sit_in_purpose']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['lab_number']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['login_time']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['logout_time']); ?></td>
-                                <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['date']); ?></td>
-                                <td class="py-2 px-4 border-b"><a href="action.php?id=<?php echo $reservation['id']; ?>" class="text-blue-500 hover:underline">Action</a></td>
+    <div class="container max-w-4xl mx-auto bg-gradient-to-r from-blue-100 to-blue-200 p-8 rounded-lg shadow-lg mt-8 flex-grow">
+        <div class="bg-blue-100 rounded-lg shadow-lg">
+            <div class="bg-blue-200 p-6 rounded-t-lg">
+                <h1 class="text-3xl font-bold text-center text-gray-800">Reservation History</h1>
+            </div>
+            <div class="p-6">
+                <div class="mb-4">
+                    <input type="text" id="search" placeholder="Search..." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-300">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">ID Number</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Name</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Sit-in Purpose</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Laboratory Number</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Login Time</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Logout Time</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Date</th>
+                                <th class="py-2 px-4 border-b text-left text-sm font-semibold text-gray-600">Action</th>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        </thead>
+                        <tbody id="reservationTable">
+                            <?php if (empty($reservations)): ?>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4 text-gray-500">No reservation history found.</td>
+                                </tr>
+                            <?php else: ?>
+                                <?php foreach ($reservations as $reservation): ?>
+                                    <tr class="hover:bg-gray-100">
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['id_number']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['name']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['sit_in_purpose']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['lab_number']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['login_time']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['logout_time']); ?></td>
+                                        <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['date']); ?></td>
+                                        <td class="py-2 px-4 border-b"><a href="action.php?id=<?php echo $reservation['id']; ?>" class="text-blue-500 hover:underline">Action</a></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 
