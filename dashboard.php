@@ -37,6 +37,16 @@ if ($result_sessions->num_rows > 0) {
     $sessions_left = "N/A";
 }
 
+// Fetch announcements
+$sql_announcements = "SELECT * FROM announcements ORDER BY created_at DESC";
+$result_announcements = $conn->query($sql_announcements);
+$announcements = [];
+if ($result_announcements->num_rows > 0) {
+    while ($row = $result_announcements->fetch_assoc()) {
+        $announcements[] = $row;
+    }
+}
+
 $conn->close();
 ?>
 
@@ -122,10 +132,10 @@ $conn->close();
         </div>
     </nav>
 
-    <div class="container mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="container p-4">
+        <div class="grid grid-cols-12 gap-4">
             <!-- Student Information -->
-            <div class="col-auto">
+            <div class="col-span-3">
                 <div class="bg-blue-100 rounded-lg shadow-lg">
                     <div class="bg-blue-200 p-6 rounded-t-lg sticky top-0 z-10">
                         <h1 class="text-3xl font-bold text-center text-gray-800">Student Information</h1>
@@ -168,21 +178,31 @@ $conn->close();
             </div>
 
             <!-- Announcements -->
-            <div class="col-auto">
-                <div class="bg-blue-100 rounded-lg shadow-lg">
+            <div class="col-span-6">
+                <div class="bg-blue-100 rounded-lg shadow-lg h-96 overflow-y-auto">
                     <div class="bg-blue-200 p-6 rounded-t-lg sticky top-0 z-10">
                         <h1 class="text-3xl font-bold text-center text-gray-800">Announcements</h1>
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
-                            <p class="text-lg">No new announcements.</p>
+                            <?php if (empty($announcements)): ?>
+                                <p class="text-lg">No new announcements.</p>
+                            <?php else: ?>
+                                <?php foreach ($announcements as $announcement): ?>
+                                    <div class="bg-white p-4 rounded-lg shadow-md mb-4">
+                                        <h4 class="text-lg font-bold"><?php echo htmlspecialchars($announcement['title']); ?></h4>
+                                        <p class="text-gray-700"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></p>
+                                        <p class="text-gray-500 text-sm"><strong>CCS Admin | </strong><?php echo date('Y-M-d', strtotime($announcement['created_at'])); ?></p>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Rules and Regulations -->
-            <div class="col-span-1">
+            <div class="col-span-3">
                 <div class="bg-blue-100 rounded-lg shadow-lg h-96 overflow-y-auto">
                     <div class="bg-blue-200 p-6 rounded-t-lg sticky top-0 z-10">
                         <h1 class="text-3xl font-bold text-center text-gray-800">Rules and Regulations</h1>

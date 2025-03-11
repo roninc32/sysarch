@@ -12,7 +12,18 @@ if (isset($_SESSION["logout_message"])) {
 $passwordError = "";
 $idError = "";
 
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["login"])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+
+    // Check for admin credentials
+    if ($username == 'admin' && $password == 'admin') {
+        // Admin login successful
+        $_SESSION['admin_logged_in'] = true;
+        header("Location: admin_dashboard.php");
+        exit();
+    }
+
     $id_number = $_POST["username"]; // Change to id_number
     $password = $_POST["password"];
 

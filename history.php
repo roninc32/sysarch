@@ -31,8 +31,8 @@ $conn->close();
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-blue-50 min-h-screen flex flex-col">
-<nav class="bg-white shadow-md sticky top-0 z-50">
+<body class="bg-gray-100 min-h-screen flex flex-col">
+<nav class="bg-gray-800 shadow-md sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
             <div class="relative flex items-center justify-between h-16">
                 <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -103,14 +103,14 @@ $conn->close();
         </div>
     </nav>
 
-    <div class="container max-w-4xl mx-auto bg-gradient-to-r from-blue-100 to-blue-200 p-8 rounded-lg shadow-lg mt-8 flex-grow">
-        <div class="bg-blue-100 rounded-lg shadow-lg">
-            <div class="bg-blue-200 p-6 rounded-t-lg">
-                <h1 class="text-3xl font-bold text-center text-gray-800">Reservation History</h1>
+    <div class="container max-w-4xl mx-auto bg-gradient-to-r from-gray-200 to-gray-300 p-8 rounded-lg shadow-lg mt-8 flex-grow">
+        <div class="bg-gray-200 rounded-lg shadow-lg">
+            <div class="bg-gray-300 p-6 rounded-t-lg">
+                <h1 class="text-3xl font-bold text-center text-gray-900">Reservation History</h1>
             </div>
             <div class="p-6">
                 <div class="mb-4">
-                    <input type="text" id="search" placeholder="Search..." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <input type="text" id="search" placeholder="Search..." class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-gray-500 focus:border-gray-500 sm:text-sm">
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full bg-white border border-gray-300">
@@ -141,7 +141,7 @@ $conn->close();
                                         <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['login_time']); ?></td>
                                         <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['logout_time']); ?></td>
                                         <td class="py-2 px-4 border-b"><?php echo htmlspecialchars($reservation['date']); ?></td>
-                                        <td class="py-2 px-4 border-b"><a href="action.php?id=<?php echo $reservation['id']; ?>" class="text-blue-500 hover:underline">Action</a></td>
+                                        <td class="py-2 px-4 border-b"><a href="action.php?id=<?php echo $reservation['id']; ?>" class="text-gray-500 hover:underline">Action</a></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php endif; ?>
