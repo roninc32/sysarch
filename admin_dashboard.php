@@ -96,46 +96,30 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-<nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
-            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space-x-4">
-                        <a href="admin_dashboard.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="admin_students.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
-                        <a href="admin_announcements.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Announcements</a>
-                        <a href="admin_sit_in_records.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sit-in Records</a>
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div class="relative flex items-center justify-between h-16">
+                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                    <div class="hidden sm:block sm:ml-6">
+                        <div class="flex space-x-4">
+                            <a href="admin_dashboard.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
+                            <a href="admin_students.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
+                            <a href="sit_in_records.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sit-in Records</a>
+                            <a href="search_student.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Search Student</a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <a href="admin_logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
+                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                    <a href="admin_logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
 
 <div class="container mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <!-- Search Student -->
-        <div class="col-span-1">
-            <div class="bg-gray-50 rounded-lg shadow-lg p-6">
-                <h2 class="text-2xl font-bold mb-4">Search Student</h2>
-                <form id="searchForm" class="space-y-4">
-                    <div>
-                        <label for="search" class="block text-sm font-medium text-gray-700">Search by ID or Name</label>
-                        <input type="text" id="search" name="search" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="button" onclick="searchStudent()" class="bg-indigo-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700">Search</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <!-- Announcements -->
-        <div class="col-span-2">
+        <div class="col-span-3">
             <div class="bg-gray-50 rounded-lg shadow-lg p-6">
                 <h2 class="text-2xl font-bold mb-4">Announcements</h2>
                 <form method="post" action="admin_dashboard.php" class="space-y-4">
