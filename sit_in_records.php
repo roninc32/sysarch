@@ -20,64 +20,82 @@ $conn->close();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sit-in Records</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass {
+            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            transform: scale(1.05);
+        }
+        body {
+            background: linear-gradient(135deg, #000000, #434343);
+        }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
-<nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
-            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space-x-4">
-                        <a href="admin_dashboard.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="admin_students.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
-                        <a href="sit_in_records.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sit-in Records</a>
-                        <a href="search_student.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Search Student</a>
-                    </div>
-                </div>
-            </div>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <a href="admin_logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
-            </div>
-        </div>
-    </div>
-</nav>
+<body class="min-h-screen flex flex-col items-center p-8 text-white">
+    
+    <header class="fixed top-0 left-0 w-full bg-opacity-90 backdrop-blur-lg glass shadow-lg z-50">
+        <nav class="w-full max-w-5xl mx-auto p-4 flex justify-between items-center">
+            <ul class="flex space-x-6">
+                <li><a href="admin_dashboard.php" class="nav-link">Dashboard</a></li>
+                <li><a href="admin_students.php" class="nav-link">Students</a></li>
+                <li><a href="sit_in_records.php" class="nav-link">Sit-in Records</a></li>
+                <li><a href="search_student.php" class="nav-link">Search Student</a></li>
+            </ul>
+            <a href="admin_logout.php" class="px-5 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all">Logout</a>
+        </nav>
+    </header>
 
-<div class="container mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
-    <h1 class="text-2xl font-bold mb-4 text-center">Sit-in Records</h1>
-    <div class="overflow-x-auto">
-        <table class="min-w-full bg-white">
-            <thead>
-                <tr>
-                    <th class="py-2 px-4 border-b border-gray-200">ID Number</th>
-                    <th class="py-2 px-4 border-b border-gray-200">Name</th>
-                    <th class="py-2 px-4 border-b border-gray-200">Purpose</th>
-                    <th class="py-2 px-4 border-b border-gray-200">Lab</th>
-                    <th class="py-2 px-4 border-b border-gray-200">Login Time</th>
-                    <th class="py-2 px-4 border-b border-gray-200">Date</th>
-                    <th class="py-2 px-4 border-b border-gray-200">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($sit_in_records as $record): ?>
-                    <tr>
-                        <td class="py-2 px-4 border-b border-gray-200"><?php echo htmlspecialchars($record['id_number']); ?></td>
-                        <td class="py-2 px-4 border-b border-gray-200"><?php echo htmlspecialchars($record['name']); ?></td>
-                        <td class="py-2 px-4 border-b border-gray-200"><?php echo htmlspecialchars($record['sit_in_purpose']); ?></td>
-                        <td class="py-2 px-4 border-b border-gray-200"><?php echo htmlspecialchars($record['lab_number']); ?></td>
-                        <td class="py-2 px-4 border-b border-gray-200"><?php echo htmlspecialchars($record['login_time']); ?></td>
-                        <td class="py-2 px-4 border-b border-gray-200"><?php echo htmlspecialchars($record['date']); ?></td>
-                        <td class="py-2 px-4 border-b border-gray-200">
-                            <form method="post" action="logout_student.php">
-                                <input type="hidden" name="id" value="<?php echo $record['id']; ?>">
-                                <input type="submit" value="Logout" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">
-                            </form>
-                        </td>
+    <main class="w-full max-w-5xl p-6 glass rounded-xl mt-24">
+        <h1 class="text-3xl font-bold text-center mb-6">Sit-in Records</h1>
+        <div class="overflow-x-auto">
+            <table class="w-full text-white text-center border border-white border-opacity-30 rounded-lg overflow-hidden">
+                <thead>
+                    <tr class="bg-white bg-opacity-10">
+                        <th class="py-3 px-5">ID Number</th>
+                        <th class="py-3 px-5">Name</th>
+                        <th class="py-3 px-5">Purpose</th>
+                        <th class="py-3 px-5">Lab</th>
+                        <th class="py-3 px-5">Login Time</th>
+                        <th class="py-3 px-5">Date</th>
+                        <th class="py-3 px-5">Action</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+                </thead>
+                <tbody>
+                    <?php foreach ($sit_in_records as $record): ?>
+                        <tr class="border-b border-white border-opacity-20 hover:bg-white hover:bg-opacity-10 transition">
+                            <td class="py-3 px-5"><?php echo htmlspecialchars($record['id_number']); ?></td>
+                            <td class="py-3 px-5"><?php echo htmlspecialchars($record['name']); ?></td>
+                            <td class="py-3 px-5"><?php echo htmlspecialchars($record['sit_in_purpose']); ?></td>
+                            <td class="py-3 px-5"><?php echo htmlspecialchars($record['lab_number']); ?></td>
+                            <td class="py-3 px-5"><?php echo htmlspecialchars($record['login_time']); ?></td>
+                            <td class="py-3 px-5"><?php echo htmlspecialchars($record['date']); ?></td>
+                            <td class="py-3 px-5">
+                                <form method="post" action="logout_student.php">
+                                    <input type="hidden" name="id" value="<?php echo $record['id']; ?>">
+                                    <input type="submit" value="Logout" class="px-4 py-2 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition cursor-pointer">
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </main>
 </body>
 </html>
