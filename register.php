@@ -21,23 +21,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $passwordError = "Passwords do not match.";
     } else {
         // Check if the account already exists
-        $sql_check = "SELECT * FROM users WHERE id_number='$id_number' OR email='$email'";
-        $result_check = $conn->query($sql_check);
+        $sql_check = "SELECT * FROM users WHERE id_number=? OR email=?";
+        $stmt = $conn->prepare($sql_check);
+        $stmt->bind_param("ss", $id_number, $email);
+        $stmt->execute();
+        $result_check = $stmt->get_result();
 
         if ($result_check->num_rows > 0) {
             $accountError = "An account with this ID number or email already exists.";
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-            $sql = "INSERT INTO users (id_number, last_name, first_name, middle_name, course_level, password, email, course, address, profile_image) VALUES ('$id_number', '$last_name', '$first_name', '$middle_name', '$course_level', '$hashed_password', '$email', '$course', '$address', '$profile_image')";
+            $sql = "INSERT INTO users (id_number, last_name, first_name, middle_name, course_level, password, email, course, address, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssssssssss", $id_number, $last_name, $first_name, $middle_name, $course_level, $hashed_password, $email, $course, $address, $profile_image);
 
-            if ($conn->query($sql) === TRUE) {
+            if ($stmt->execute()) {
                 header("Location: login.php");
                 exit();
             } else {
-                echo "Error: " . $sql . "<br>" . $conn->error;
+                echo "Error: " . $stmt->error;
             }
         }
 
+        $stmt->close();
         $conn->close();
     }
 }

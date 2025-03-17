@@ -125,68 +125,175 @@ $conn->close();
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
-        .glass {
-            backdrop-filter: blur(10px);
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        .nav-container {
+            @apply bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg border-b border-gray-200;
+        }
+        
+        .nav-link {
+            @apply px-4 py-2 text-gray-600 hover:text-indigo-600 font-medium transition-all duration-200
+                relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 
+                after:bg-indigo-600 after:transition-all after:duration-200 hover:after:w-full;
+        }
+        
+        .nav-link.active {
+            @apply text-indigo-600 after:w-full;
+        }
+        
+        .logout-btn {
+            @apply px-4 py-2 text-red-600 border border-red-600 rounded-lg 
+                hover:bg-red-600 hover:text-white transition-all duration-200
+                font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
         }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-    <header>
-        <nav class="bg-white shadow-md sticky top-0 z-50 glass">
-            <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-                <div class="relative flex items-center justify-between h-16">
-                    <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                        <div class="hidden sm:block sm:ml-6">
-                            <div class="flex space-x-4">
-                                <a href="admin_dashboard.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                                <a href="admin_students.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
-                                <a href="sit_in_records.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sit-in Records</a>
-                                <a href="search_student.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Search Student</a>
+    <header class="fixed w-full top-0">
+        <nav class="nav-container">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <img class="h-10 w-auto" src="assets/images/ccs-logo.png" alt="CCS Logo">
+                        </div>
+                        <div class="hidden md:block ml-10">
+                            <div class="flex items-baseline space-x-8">
+                                <a href="admin_dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
+                                    Dashboard
+                                </a>
+                                <a href="student_record.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
+                                    Students
+                                </a>
+                                <a href="sit_in_records.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
+                                    Sit-in Records
+                                </a>
+                                <a href="search_student.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
+                                    Search Student
+                                </a>
                             </div>
                         </div>
                     </div>
-                    <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                        <a href="admin_logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
+                    <div>
+                        <a href="admin_logout.php" class="logout-btn">
+                            Logout
+                        </a>
                     </div>
                 </div>
             </div>
         </nav>
     </header>
-    
-    <main class="container mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow glass">
-        <section>
-            <article class="bg-gray-50 rounded-lg shadow-lg p-6 glass">
-                <h2 class="text-2xl font-bold mb-4">Announcements</h2>
-                <form method="post" action="admin_dashboard.php" class="space-y-4">
-                    <label for="content" class="block text-sm font-medium text-gray-700">New Announcement</label>
-                    <textarea id="content" name="content" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
-                    <div class="flex justify-end">
-                        <input type="submit" name="create_announcement" class="bg-green-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-green-700" value="Create Announcement">
+<main class="container mx-auto p-8 mt-20">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <!-- Statistics Cards -->
+        <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Total Students</h3>
+            <p class="text-3xl font-bold text-indigo-600"><?php echo count($students); ?></p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Active Sessions</h3>
+            <p class="text-3xl font-bold text-green-600"><?php echo count($sit_in_records); ?></p>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Total Announcements</h3>
+            <p class="text-3xl font-bold text-blue-600"><?php echo count($announcements); ?></p>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Announcements Section -->
+        <section class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Announcements</h2>
+                <button class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-all duration-300" onclick="showAnnouncementForm()">New Announcement</button>
+            </div>
+
+            <!-- Announcement Form -->
+            <form method="post" action="admin_dashboard.php" class="hidden space-y-4 mb-6" id="announcementForm">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <label for="content" class="block text-sm font-medium text-gray-700 mb-2">New Announcement</label>
+                    <textarea id="content" name="content" required rows="4" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+                    <div class="flex justify-end mt-4">
+                        <input type="submit" name="create_announcement" class="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-all duration-300" value="Post">
                     </div>
-                </form>
-                <h3 class="text-xl font-bold mb-4">Posted Announcements</h3>
-                <hr>
-                <div class="mt-8 h-96 overflow-y-auto">
-                    <?php foreach ($announcements as $announcement): ?>
-                        <article class="bg-white p-4 rounded-lg shadow-md mb-4 glass">
-                            <p class="text-gray-700"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></p>
-                            <div class="flex justify-end mt-4 space-x-2">
+                </div>
+            </form>
+
+            <!-- Announcements List -->
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                <?php foreach ($announcements as $announcement): ?>
+                    <article class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+                        <p class="text-gray-700 mb-4"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></p>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-500"><?php echo date('F j, Y', strtotime($announcement['created_at'])); ?></span>
+                            <div class="space-x-2">
+                                <button class="text-blue-500 hover:text-blue-700" onclick="editAnnouncement(<?php echo $announcement['id']; ?>, '<?php echo htmlspecialchars(addslashes($announcement['content'])); ?>')">Edit</button>
                                 <form method="post" action="admin_dashboard.php" class="inline">
                                     <input type="hidden" name="id" value="<?php echo $announcement['id']; ?>">
-                                    <input type="submit" name="delete_announcement" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700" value="Delete">
+                                    <button type="submit" name="delete_announcement" class="text-red-500 hover:text-red-700">Delete</button>
                                 </form>
-                                <button class="bg-blue-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-blue-700" onclick="editAnnouncement(<?php echo $announcement['id']; ?>, '<?php echo htmlspecialchars(addslashes($announcement['content'])); ?>')">Edit</button>
                             </div>
-                        </article>
-                    <?php endforeach; ?>
-                </div>
-            </article>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
         </section>
-    </main>
-    
+
+        <!-- Recent Activities Section -->
+        <section class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Activities</h2>
+            <div class="space-y-4 max-h-96 overflow-y-auto">
+                <?php foreach ($sit_in_records as $record): ?>
+                    <div class="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-all duration-300">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-gray-800"><?php echo htmlspecialchars($record['name']); ?></h4>
+                                <p class="text-sm text-gray-600">Lab: <?php echo htmlspecialchars($record['lab_number']); ?></p>
+                                <p class="text-sm text-gray-600">Purpose: <?php echo htmlspecialchars($record['sit_in_purpose']); ?></p>
+                            </div>
+                            <span class="text-sm text-gray-500"><?php echo date('g:i A', strtotime($record['login_time'])); ?></span>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </section>
+    </div>
+</main>
+
+    <script>
+    function showAnnouncementForm() {
+        const form = document.getElementById('announcementForm');
+        form.classList.toggle('hidden');
+    }
+
+    function editAnnouncement(id, content) {
+        const newContent = prompt('Edit announcement:', content);
+        if (newContent && newContent !== content) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = 'admin_dashboard.php';
+            
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'id';
+            idInput.value = id;
+            
+            const contentInput = document.createElement('input');
+            contentInput.type = 'hidden';
+            contentInput.name = 'content';
+            contentInput.value = newContent;
+            
+            const submitInput = document.createElement('input');
+            submitInput.type = 'hidden';
+            submitInput.name = 'edit_announcement';
+            submitInput.value = '1';
+            
+            form.appendChild(idInput);
+            form.appendChild(contentInput);
+            form.appendChild(submitInput);
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
+    </script>
     <footer class="text-center p-4 bg-gray-200 mt-8">
         <p>&copy; <?php echo date("Y"); ?>All rights reserved.</p>
     </footer>

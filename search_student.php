@@ -85,7 +85,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['handle_sit_in'])) {
                 <div class="hidden sm:block sm:ml-6">
                     <div class="flex space-x-4">
                         <a href="admin_dashboard.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="admin_students.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
+                        <a href="student_record.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
                         <a href="sit_in_records.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sit-in Records</a>
                         <a href="search_student.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Search Student</a>
                     </div>
@@ -118,10 +118,10 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
     fetch(`?search=${encodeURIComponent(searchInput)}`)
         .then(response => response.json())
         .then(data => {
+            const resultContainer = document.getElementById('result');
             if (data.success) {
                 // Show the search result and sit-in form
                 const student = data.student;
-                const resultContainer = document.getElementById('result');
                 resultContainer.innerHTML = `
                     <div class="bg-green-100 border-l-4 border-green-500 p-4 rounded-lg shadow-md">
                         <h2 class="text-2xl font-semibold text-gray-800 mb-3">Student Details</h2>
@@ -162,7 +162,8 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
                     </div>
                 `;
             } else {
-                resultContainer.innerHTML = "<p>No student found.</p>";
+                resultContainer.innerHTML = "";
+                alert("No student found.");
             }
         })
         .catch(error => console.error('Error:', error));
