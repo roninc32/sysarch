@@ -17,7 +17,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = $_POST["address"];
     $profile_image = 'assets/images/profile.jpg'; // Set default profile image
 
-    if ($password !== $confirm_password) {
+    if (strlen($password) < 8) {
+        $passwordError = "Password must be at least 8 characters long.";
+    } else if ($password !== $confirm_password) {
         $passwordError = "Passwords do not match.";
     } else {
         // Check if the account already exists
@@ -128,6 +130,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         function validateForm() {
             var password = document.getElementById("password").value;
             var confirm_password = document.getElementById("confirm_password").value;
+            
+            if (password.length < 8) {
+                alert("Password must be at least 8 characters long.");
+                return false;
+            }
             if (password !== confirm_password) {
                 alert("Passwords do not match.");
                 return false;

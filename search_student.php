@@ -49,22 +49,34 @@ if (isset($_GET['search'])) {
 // Handle sit-in activity POST request
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['handle_sit_in'])) {
     $id_number = $_POST['id_number'];
+    $name = $_POST['name'];
     $purpose = $_POST['purpose'];
     $lab = $_POST['lab'];
     $sessions_left = $_POST['sessions_left'] - 1;
+    $login_time = date('H:i:s');
+    $current_date = date('Y-m-d');
 
     // Update sessions_left in users table
-    $sql_update_sessions = "UPDATE users SET sessions_left='$sessions_left' WHERE id_number='$id_number'";
-    $conn->query($sql_update_sessions);
+    $sql_update_sessions = "UPDATE users SET sessions_left = ? WHERE id_number = ?";
+    $stmt_update = $conn->prepare($sql_update_sessions);
+    $stmt_update->bind_param("is", $sessions_left, $id_number);
+    $stmt_update->execute();
 
-    // Insert reservation record in reservations table
-    $sql_insert_reservation = "INSERT INTO reservations (id_number, name, sit_in_purpose, lab_number, login_time, logout_time, date) 
-                                VALUES ('$id_number', '{$_POST['name']}', '$purpose', '$lab', NOW(), '00:00:00', NOW())";
-    $conn->query($sql_insert_reservation);
+    // Insert into active_sit_ins table
+    $sql_insert = "INSERT INTO active_sit_ins (student_id, name, sit_in_purpose, lab_number, login_time, date) 
+                   VALUES (?, ?, ?, ?, ?, ?)";
+    $stmt_insert = $conn->prepare($sql_insert);
+    $stmt_insert->bind_param("ssssss", $id_number, $name, $purpose, $lab, $login_time, $current_date);
+    
+    if ($stmt_insert->execute()) {
+        header("Location: sit_in_records.php");
+        exit();
+    } else {
+        echo "Error: " . $conn->error;
+    }
 
-    // Redirect back to the search page with a success flag
-    header("Location: search_student.php?success=true");
-    exit();
+    $stmt_update->close();
+    $stmt_insert->close();
 }
 ?>
 
@@ -75,95 +87,169 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['handle_sit_in'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Student</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
+    <style>
+        .nav-container {
+            @apply bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg;
+        }
+        
+        .nav-link {
+            @apply px-4 py-2 text-white hover:text-white/90 font-medium transition-all duration-200
+                relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 
+                after:bg-white after:transition-all after:duration-200 hover:after:w-full;
+        }
+        
+        .nav-link.active {
+            @apply text-white after:w-full font-bold;
+        }
+        
+        .logout-btn {
+            @apply px-4 py-2 text-white border-2 border-white/80 rounded-lg 
+                hover:bg-white hover:text-indigo-600 transition-all duration-200
+                font-medium focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2
+                focus:ring-offset-indigo-600;
+        }
 
-<nav class="bg-white shadow-md sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-        <div class="relative flex items-center justify-between h-16">
-            <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space-x-4">
-                        <a href="admin_dashboard.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Dashboard</a>
-                        <a href="student_record.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Students</a>
-                        <a href="sit_in_records.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Sit-in Records</a>
-                        <a href="search_student.php" class="text-gray-900 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Search Student</a>
+        .nav-brand {
+            @apply flex items-center space-x-3 text-white;
+        }
+
+        .nav-brand-text {
+            @apply text-lg font-bold hidden md:block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen" style="background-image: url('assets/images/bg.jpg'); background-size: cover; background-position: center; background-attachment: fixed;">
+    <nav class="nav-container">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center">
+                    <div class="nav-brand">
+                        <img class="h-10 w-auto" src="assets/images/ccs-logo.png" alt="CCS Logo">
+                    </div>
+                    <div class="hidden md:block ml-10">
+                        <div class="flex items-baseline space-x-4">
+                            <a href="admin_dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-home mr-2"></i>Dashboard
+                            </a>
+                            <a href="student_record.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-users mr-2"></i>Students
+                            </a>
+                            <a href="sit_in_records.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-clipboard-list mr-2"></i>Sit-in Records
+                            </a>
+                            <a href="search_student.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-search mr-2"></i>Search Student
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
-                <a href="admin_logout.php" class="bg-red-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-red-700">Logout</a>
+                <div class="flex items-center">
+                    <a href="admin_logout.php" class="logout-btn">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
-</nav>
+    </nav>
+<div class="container mx-auto px-4 py-8">
+    <div class="glass rounded-lg shadow-lg p-6 mb-6">
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-800">Search Student</h1>
+            <p class="text-gray-600 mt-2">Enter student ID or name to search</p>
+        </div>
 
-<!-- Search Form -->
-<div class="container mx-auto bg-white p-8 rounded-lg shadow-lg mt-8 flex-grow">
-    <h1 class="text-2xl font-bold mb-4 text-center">Search Student</h1>
-    <form id="searchForm" class="flex items-center justify-center space-x-4 mb-4">
-        <input type="text" id="searchInput" name="search" placeholder="Enter student ID or name" required class="p-2 border border-gray-300 rounded-lg w-64">
-        <button type="submit" class="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-700">Search</button>
-    </form>
-    <div id="result" class="mt-4 text-left"></div>
+        <form id="searchForm" class="max-w-md mx-auto mb-8">
+            <div class="flex gap-4">
+                <input type="text" 
+                       id="searchInput" 
+                       name="search" 
+                       placeholder="Enter student ID or name" 
+                       required 
+                       class="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition">
+                <button type="submit" 
+                        class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition duration-200 ease-in-out transform hover:scale-105">
+                    Search
+                </button>
+            </div>
+        </form>
+
+        <div id="result" class="max-w-3xl mx-auto"></div>
+    </div>
 </div>
 
 <script>
-// Handle Search Form Submission
 document.getElementById('searchForm').addEventListener('submit', function(e) {
     e.preventDefault();
     const searchInput = document.getElementById('searchInput').value;
 
-    // Send a GET request to search for the student
     fetch(`?search=${encodeURIComponent(searchInput)}`)
         .then(response => response.json())
         .then(data => {
             const resultContainer = document.getElementById('result');
             if (data.success) {
-                // Show the search result and sit-in form
                 const student = data.student;
                 resultContainer.innerHTML = `
-                    <div class="bg-green-100 border-l-4 border-green-500 p-4 rounded-lg shadow-md">
-                        <h2 class="text-2xl font-semibold text-gray-800 mb-3">Student Details</h2>
-                        <div class="space-y-2">
-                            <p><strong class="font-medium text-gray-700">ID Number:</strong> <span class="text-gray-900">${student.id_number}</span></p>
-                            <p><strong class="font-medium text-gray-700">Name:</strong> <span class="text-gray-900">${student.name}</span></p>
-                            <p><strong class="font-medium text-gray-700">Sessions Left:</strong> <span class="text-gray-900">${student.sessions_left}</span></p>
+                    <div class="glass p-6 rounded-lg shadow-lg">
+                        <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b">Student Details</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <p class="text-gray-600">ID Number</p>
+                                <p class="font-semibold text-gray-800">${student.id_number}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Name</p>
+                                <p class="font-semibold text-gray-800">${student.name}</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-600">Sessions Left</p>
+                                <p class="font-semibold text-gray-800">${student.sessions_left}</p>
+                            </div>
                         </div>
-                        <h2 class="text-xl font-bold mt-4">Log Sit-in Activity</h2>
-                        <form method="post" action="search_student.php" class="space-y-4 mt-4" onsubmit="return logSitInActivity()">
+
+                        <h3 class="text-xl font-bold text-gray-800 mb-4">Log Sit-in Activity</h3>
+                        <form method="post" action="search_student.php" class="space-y-4" onsubmit="return logSitInActivity()">
                             <input type="hidden" name="id_number" value="${student.id_number}">
                             <input type="hidden" name="name" value="${student.name}">
                             <input type="hidden" name="sessions_left" value="${student.sessions_left}">
-                            <div>
-                                <label for="purpose" class="block text-sm font-medium text-gray-700">Purpose</label>
-                                <select name="purpose" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="C programming">C programming</option>
-                                    <option value="Java programming">Java programming</option>
-                                    <option value="C# programming">C# programming</option>
-                                    <option value="PHP programming">PHP programming</option>
-                                    <option value="ASP.NET programming">ASP.NET programming</option>
-                                </select>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-600 mb-2">Purpose</label>
+                                    <select name="purpose" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="C programming">C programming</option>
+                                        <option value="Java programming">Java programming</option>
+                                        <option value="C# programming">C# programming</option>
+                                        <option value="PHP programming">PHP programming</option>
+                                        <option value="ASP.NET programming">ASP.NET programming</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-600 mb-2">Lab</label>
+                                    <select name="lab" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                        <option value="524">524</option>
+                                        <option value="526">526</option>
+                                        <option value="528">528</option>
+                                        <option value="530">530</option>
+                                        <option value="Mac Laboratory">Mac Laboratory</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label for="lab" class="block text-sm font-medium text-gray-700">Lab</label>
-                                <select name="lab" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                                    <option value="524">524</option>
-                                    <option value="526">526</option>
-                                    <option value="528">528</option>
-                                    <option value="530">530</option>
-                                    <option value="Mac Laboratory">Mac Laboratory</option>
-                                </select>
-                            </div>
-                            <div class="flex justify-end">
-                                <input type="submit" name="handle_sit_in" class="bg-green-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-green-700" value="Log Sit-in">
+                            
+                            <div class="flex justify-end mt-6">
+                                <button type="submit" name="handle_sit_in" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition duration-200 ease-in-out transform hover:scale-105">
+                                    Log Sit-in
+                                </button>
                             </div>
                         </form>
                     </div>
                 `;
             } else {
-                resultContainer.innerHTML = "";
-                alert("No student found.");
+                resultContainer.innerHTML = `
+                    <div class="glass p-6 rounded-lg shadow-lg text-center">
+                        <p class="text-red-500 font-semibold">No student found.</p>
+                    </div>
+                `;
             }
         })
         .catch(error => console.error('Error:', error));

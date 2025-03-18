@@ -8,7 +8,7 @@ if (!isset($_SESSION["admin_logged_in"])) {
     header("Location: login.php");
     exit();
 }
-
+        
 // Fetch students with pagination
 $limit = 10;
 $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
@@ -25,13 +25,29 @@ $sql_announcements = "SELECT * FROM announcements ORDER BY created_at DESC";
 $result_announcements = $conn->query($sql_announcements);
 $announcements = $result_announcements->fetch_all(MYSQLI_ASSOC);
 
-// Fetch sit-in records with pagination
-$sql_sit_in = "SELECT * FROM reservations LIMIT ?, ?";
+// Fetch sit-in records with pagination (only today's active sessions)
+$sql_sit_in = "SELECT * FROM active_sit_ins WHERE DATE(date) = CURDATE() LIMIT ?, ?";
 $stmt = $conn->prepare($sql_sit_in);
 $stmt->bind_param("ii", $offset, $limit);
 $stmt->execute();
 $result_sit_in = $stmt->get_result();
 $sit_in_records = $result_sit_in->fetch_all(MYSQLI_ASSOC);
+
+// Get total count of today's sit-in sessions
+$sql_active_count = "SELECT COUNT(*) as active_count FROM active_sit_ins WHERE DATE(date) = CURDATE()";
+$result_active_count = $conn->query($sql_active_count);
+$active_count = $result_active_count->fetch_assoc()['active_count'];
+
+// Fetch language statistics from all sit-in records
+$sql_languages = "SELECT sit_in_purpose, COUNT(*) as count 
+                 FROM reservations 
+                 GROUP BY sit_in_purpose 
+                 ORDER BY count DESC";
+$result_languages = $conn->query($sql_languages);
+$language_stats = $result_languages->fetch_all(MYSQLI_ASSOC);
+
+// Convert to JSON for JavaScript
+$language_data = json_encode($language_stats);
 
 // Handle announcement creation with prepared statements
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_announcement'])) {
@@ -124,63 +140,74 @@ $conn->close();
     <title>Admin Dashboard</title>
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .nav-container {
-            @apply bg-white bg-opacity-90 backdrop-filter backdrop-blur-lg border-b border-gray-200;
+            @apply bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg;
         }
         
         .nav-link {
-            @apply px-4 py-2 text-gray-600 hover:text-indigo-600 font-medium transition-all duration-200
+            @apply px-4 py-2 text-white hover:text-white/90 font-medium transition-all duration-200
                 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 
-                after:bg-indigo-600 after:transition-all after:duration-200 hover:after:w-full;
+                after:bg-white after:transition-all after:duration-200 hover:after:w-full;
         }
         
         .nav-link.active {
-            @apply text-indigo-600 after:w-full;
+            @apply text-white after:w-full font-bold;
         }
         
         .logout-btn {
-            @apply px-4 py-2 text-red-600 border border-red-600 rounded-lg 
-                hover:bg-red-600 hover:text-white transition-all duration-200
-                font-medium focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2;
+            @apply px-4 py-2 text-white border-2 border-white/80 rounded-lg 
+                hover:bg-white hover:text-indigo-600 transition-all duration-200
+                font-medium focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2
+                focus:ring-offset-indigo-600;
+        }
+
+        .nav-brand {
+            @apply flex items-center space-x-3 text-white;
+        }
+
+        .nav-brand-text {
+            @apply text-lg font-bold hidden md:block;
         }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col">
-    <header class="fixed w-full top-0">
+    <header class="w-full top-0 z-50">
         <nav class="nav-container">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     <div class="flex items-center">
-                        <div class="flex-shrink-0">
+                        <div class="nav-brand">
                             <img class="h-10 w-auto" src="assets/images/ccs-logo.png" alt="CCS Logo">
                         </div>
                         <div class="hidden md:block ml-10">
-                            <div class="flex items-baseline space-x-8">
+                            <div class="flex items-baseline space-x-4">
                                 <a href="admin_dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                                    Dashboard
+                                    <i class="fas fa-home mr-2"></i>Dashboard
                                 </a>
                                 <a href="student_record.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                                    Students
+                                    <i class="fas fa-users mr-2"></i>Students
                                 </a>
                                 <a href="sit_in_records.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                                    Sit-in Records
+                                    <i class="fas fa-clipboard-list mr-2"></i>Sit-in Records
                                 </a>
                                 <a href="search_student.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                                    Search Student
+                                    <i class="fas fa-search mr-2"></i>Search Student
                                 </a>
                             </div>
                         </div>
                     </div>
-                    <div>
+                    <div class="flex items-center">
                         <a href="admin_logout.php" class="logout-btn">
-                            Logout
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </a>
                     </div>
                 </div>
             </div>
         </nav>
     </header>
+
 <main class="container mx-auto p-8 mt-20">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <!-- Statistics Cards -->
@@ -190,15 +217,16 @@ $conn->close();
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Active Sessions</h3>
-            <p class="text-3xl font-bold text-green-600"><?php echo count($sit_in_records); ?></p>
+            <p class="text-3xl font-bold text-green-600"><?php echo $active_count; ?></p>
+            <p class="text-sm text-gray-600 mt-2">Current sit-in sessions today</p>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
             <h3 class="text-xl font-bold text-gray-800 mb-4">Total Announcements</h3>
             <p class="text-3xl font-bold text-blue-600"><?php echo count($announcements); ?></p>
         </div>
-    </div>
+    </div>      
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <!-- Announcements Section -->
         <section class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
             <div class="flex justify-between items-center mb-6">
@@ -257,45 +285,115 @@ $conn->close();
         </section>
     </div>
 </main>
+    <!-- Charts section moved here -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Language Distribution</h3>
+            <canvas id="languagePieChart"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Language Usage History</h3>
+            <canvas id="languageBarChart"></canvas>
+        </div>
+    </div>
+</main>
+  <!-- Add Chart.js before the existing script tag -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Add this before the existing JavaScript code
+document.addEventListener('DOMContentLoaded', function() {
+    const languageStats = <?php echo $language_data; ?>;
+    const labels = languageStats.map(item => item.sit_in_purpose);
+    const data = languageStats.map(item => item.count);
+    
+    // Random colors generator
+    const colors = labels.map(() => 
+        '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
+    );
 
-    <script>
-    function showAnnouncementForm() {
-        const form = document.getElementById('announcementForm');
-        form.classList.toggle('hidden');
-    }
-
-    function editAnnouncement(id, content) {
-        const newContent = prompt('Edit announcement:', content);
-        if (newContent && newContent !== content) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = 'admin_dashboard.php';
-            
-            const idInput = document.createElement('input');
-            idInput.type = 'hidden';
-            idInput.name = 'id';
-            idInput.value = id;
-            
-            const contentInput = document.createElement('input');
-            contentInput.type = 'hidden';
-            contentInput.name = 'content';
-            contentInput.value = newContent;
-            
-            const submitInput = document.createElement('input');
-            submitInput.type = 'hidden';
-            submitInput.name = 'edit_announcement';
-            submitInput.value = '1';
-            
-            form.appendChild(idInput);
-            form.appendChild(contentInput);
-            form.appendChild(submitInput);
-            document.body.appendChild(form);
-            form.submit();
+    // Pie Chart
+    new Chart(document.getElementById('languagePieChart'), {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right'
+                }
+            }
         }
+    });
+
+    // Bar Chart
+    new Chart(document.getElementById('languageBarChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Sessions',
+                data: data,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+});
+
+function showAnnouncementForm() {
+    const form = document.getElementById('announcementForm');
+    form.classList.toggle('hidden');
+}
+
+function editAnnouncement(id, content) {
+    const newContent = prompt('Edit announcement:', content);
+    if (newContent && newContent !== content) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'admin_dashboard.php';
+        
+        const idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = 'id';
+        idInput.value = id;
+        
+        const contentInput = document.createElement('input');
+        contentInput.type = 'hidden';
+        contentInput.name = 'content';
+        contentInput.value = newContent;
+        
+        const submitInput = document.createElement('input');
+        submitInput.type = 'hidden';
+        submitInput.name = 'edit_announcement';
+        submitInput.value = '1';
+        
+        form.appendChild(idInput);
+        form.appendChild(contentInput);
+        form.appendChild(submitInput);
+        
+        document.body.appendChild(form);
+        form.submit();
     }
-    </script>
-    <footer class="text-center p-4 bg-gray-200 mt-8">
-        <p>&copy; <?php echo date("Y"); ?>All rights reserved.</p>
-    </footer>
+}
+</script>
+<footer class="text-center p-4 bg-gray-200 mt-8">
+    <p>&copy; <?php echo date("Y"); ?> All rights reserved.</p>
+</footer>
 </body>
 </html>
