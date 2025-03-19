@@ -48,6 +48,7 @@ $conn->close();
     <title>Sit-in Records</title>
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .nav-container {
             @apply bg-gradient-to-r from-indigo-600 to-blue-500 shadow-lg;
@@ -106,7 +107,7 @@ $conn->close();
                         </div>
                     </div>
                     <div class="flex items-center">
-                        <a href="admin_logout.php" class="logout-btn">
+                        <a href="#" onclick="confirmAdminLogout()" class="logout-btn">
                             <i class="fas fa-sign-out-alt mr-2"></i>Logout
                         </a>
                     </div>
@@ -163,7 +164,7 @@ $conn->close();
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['login_time']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['date']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                            <form method="post" action="logout_student.php" class="inline">
+                                            <form method="post" action="logout_student.php" class="inline" onsubmit="return confirmLogout()">
                                                 <input type="hidden" name="id" value="<?php echo $record['id']; ?>">
                                                 <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded-md text-sm transition duration-150">Logout</button>
                                             </form>
@@ -252,6 +253,18 @@ $conn->close();
     </main>
 
     <script>
+        // Add this function before the existing script code
+        function confirmLogout() {
+            return confirm("Are you sure you want to log out this student from the active sit-in session?");
+        }
+
+        // Add this function at the beginning of the script section
+        function confirmAdminLogout() {
+            if (confirm("Are you sure you want to logout from your admin account?")) {
+                window.location.href = 'admin_logout.php';
+            }
+        }
+
         // Check URL parameters for initial tab state
         const urlParams = new URLSearchParams(window.location.search);
         const initialTab = urlParams.get('tab') || 'current';
