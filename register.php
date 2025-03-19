@@ -1,4 +1,5 @@
 <?php
+session_start();
 include 'config.php';
 
 $passwordError = "";
@@ -38,6 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt->bind_param("ssssssssss", $id_number, $last_name, $first_name, $middle_name, $course_level, $hashed_password, $email, $course, $address, $profile_image);
 
             if ($stmt->execute()) {
+                $_SESSION['registration_success'] = true;
                 header("Location: login.php");
                 exit();
             } else {
@@ -141,6 +143,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
             return true;
         }
+
+        // Check for success message in PHP session
+        <?php
+        if (isset($_SESSION['registration_success']) && $_SESSION['registration_success']) {
+            echo 'alert("Registration successful! You can now login.");';
+            unset($_SESSION['registration_success']);
+        }
+        ?>
     </script>
 </body>
 </html>

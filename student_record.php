@@ -1,6 +1,47 @@
 <?php
 include 'config.php';
 
+// Add form processing code at the top
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id_number = $_POST["id_number"];
+    $last_name = $_POST["last_name"];
+    $first_name = $_POST["first_name"];
+    $middle_name = $_POST["middle_name"];
+    $course_level = $_POST["course_level"];
+    $password = $_POST["password"];
+    $confirm_password = $_POST["confirm_password"];
+    $email = $_POST["email"];
+    $course = $_POST["course"];
+    $address = $_POST["address"];
+    $profile_image = 'assets/images/profile.jpg';
+
+    if ($password !== $confirm_password) {
+        echo "<script>alert('Passwords do not match!');</script>";
+    } else {
+        // Check if user already exists
+        $sql_check = "SELECT * FROM users WHERE id_number=? OR email=?";
+        $stmt = $conn->prepare($sql_check);
+        $stmt->bind_param("ss", $id_number, $email);
+        $stmt->execute();
+        $result_check = $stmt->get_result();
+
+        if ($result_check->num_rows > 0) {
+            echo "<script>alert('An account with this ID number or email already exists.');</script>";
+        } else {
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+            $sql = "INSERT INTO users (id_number, last_name, first_name, middle_name, course_level, password, email, course, address, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssssssssss", $id_number, $last_name, $first_name, $middle_name, $course_level, $hashed_password, $email, $course, $address, $profile_image);
+
+            if ($stmt->execute()) {
+                echo "<script>alert('Student registered successfully!');</script>";
+            } else {
+                echo "<script>alert('Error registering student: " . $stmt->error . "');</script>";
+            }
+        }
+    }
+}
+
 // Fetch student records
 $sql_students = "SELECT * FROM users";
 $result_students = $conn->query($sql_students);
@@ -95,6 +136,11 @@ $conn->close();
     <main class="container mx-auto p-6 lg:p-8 flex-grow">
         <div class="bg-white bg-opacity-90 rounded-xl shadow-2xl p-6 lg:p-8 backdrop-blur-lg">
             <h1 class="text-4xl font-bold text-gray-800 mb-8 text-center">Student Records</h1>
+            <div class="mb-6 flex justify-end">
+                <button onclick="openModal()" class="bg-indigo-500 text-white px-4 py-2 rounded-md shadow-sm hover:bg-indigo-700">
+                    <i class="fas fa-user-plus mr-2"></i>Register New Student
+                </button>
+            </div>
             <div class="overflow-x-auto bg-white rounded-lg shadow">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead>
@@ -133,5 +179,84 @@ $conn->close();
     <footer class="text-center p-4 text-white mt-8">
         <p>&copy; <?php echo date("Y"); ?> All rights reserved.</p>
     </footer>
+
+    <!-- Registration Modal -->
+    <div id="registrationModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Register New Student</h3>
+                <form method="post" class="space-y-4" onsubmit="return confirmRegistration()">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">ID Number</label>
+                        <input type="text" name="id_number" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Last Name</label>
+                        <input type="text" name="last_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">First Name</label>
+                        <input type="text" name="first_name" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Middle Name</label>
+                        <input type="text" name="middle_name" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Course Level</label>
+                        <select name="course_level" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="1st Year">1</option>
+                            <option value="2nd Year">2</option>
+                            <option value="3rd Year">3</option>
+                            <option value="4th Year">4</option>
+                            <option value="5th Year">5</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Course</label>
+                        <select name="course" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                            <option value="Computer Science">BSCS</option>
+                            <option value="Information Technology">BSIT</option>
+                            <option value="Software Engineering">BSSE</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Password</label>
+                        <input type="password" name="password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                        <input type="password" name="confirm_password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                        <input type="email" name="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Address</label>
+                        <textarea name="address" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"></textarea>
+                    </div>
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-700">Cancel</button>
+                        <button type="submit" class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Register</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('registrationModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('registrationModal').classList.add('hidden');
+        }
+
+        function confirmRegistration() {
+            return confirm('Are you sure you want to register this student?');
+        }
+    </script>
 </body>
 </html>
