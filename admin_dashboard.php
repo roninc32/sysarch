@@ -49,6 +49,16 @@ $language_stats = $result_languages->fetch_all(MYSQLI_ASSOC);
 // Convert to JSON for JavaScript
 $language_data = json_encode($language_stats);
 
+
+$sql_lab_numbers = "SELECT lab_number, COUNT(*) as count 
+                    FROM reservations 
+                    GROUP BY lab_number 
+                    ORDER BY count DESC";
+$result_lab_numbers = $conn->query($sql_lab_numbers);
+$lab_stats = $result_lab_numbers->fetch_all(MYSQLI_ASSOC);
+
+$lab_data = json_encode($lab_stats);
+
 // Handle announcement creation with prepared statements
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_announcement'])) {
     $content = trim($_POST['content']);
@@ -292,8 +302,8 @@ $conn->close();
             <canvas id="languagePieChart"></canvas>
         </div>
         <div class="bg-white rounded-lg shadow-lg p-6 glass-morphism">
-            <h3 class="text-xl font-bold text-gray-800 mb-4">Language Usage History</h3>
-            <canvas id="languageBarChart"></canvas>
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Laboratory Usage</h3>
+            <canvas id="laboratoryBarChart"></canvas>
         </div>
     </div>
 </main>
@@ -301,6 +311,41 @@ $conn->close();
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Add this before the existing JavaScript code
+document.addEventListener(`DOMContentLoaded`, function() {
+    const laboratoryStats = <?php echo $lab_data; ?>;
+    const labels = laboratoryStats.map(item => item.lab_number);
+    const data = laboratoryStats.map(item => item.count);
+
+    // Random colors generator
+    const colors = labels.map(() => 
+        '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')
+    );
+
+        // Bar Chart
+        new Chart(document.getElementById('laboratoryBarChart'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Sessions',
+                data: data,
+                backgroundColor: colors
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+})
+
 document.addEventListener('DOMContentLoaded', function() {
     const languageStats = <?php echo $language_data; ?>;
     const labels = languageStats.map(item => item.sit_in_purpose);
@@ -326,30 +371,6 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: {
                 legend: {
                     position: 'right'
-                }
-            }
-        }
-    });
-
-    // Bar Chart
-    new Chart(document.getElementById('languageBarChart'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Number of Sessions',
-                data: data,
-                backgroundColor: colors
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
-                    }
                 }
             }
         }
