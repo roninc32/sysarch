@@ -151,11 +151,28 @@ $conn->close();
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lab</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Login Time</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Action</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                <?php foreach ($current_records as $record): ?>
+                                <?php foreach ($current_records as $record): 
+                                    $login_time = strtotime($record['date'] . ' ' . $record['login_time']);
+                                    $current_time = time();
+                                    $duration_minutes = round(($current_time - $login_time) / 60);
+                                    
+                                    // Determine status and color based on duration
+                                    if ($duration_minutes < 30) {
+                                        $status = "Active";
+                                        $status_color = "green";
+                                    } elseif ($duration_minutes < 60) {
+                                        $status = "Extended";
+                                        $status_color = "yellow";
+                                    } else {
+                                        $status = "Overdue";
+                                        $status_color = "red";
+                                    }
+                                ?>
                                     <tr class="hover:bg-gray-50">
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['student_id']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['name']); ?></td>
@@ -163,6 +180,11 @@ $conn->close();
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['lab_number']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['login_time']); ?></td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900"><?php echo htmlspecialchars($record['date']); ?></td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-<?php echo $status_color; ?>-100 text-<?php echo $status_color; ?>-800">
+                                                <?php echo $status; ?>
+                                            </span>
+                                        </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                                             <form method="post" action="logout_student.php" class="inline" onsubmit="return confirmLogout()">
                                                 <input type="hidden" name="id" value="<?php echo $record['id']; ?>">

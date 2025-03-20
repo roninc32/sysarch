@@ -292,7 +292,7 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
                                 
                                 <div class="flex justify-end mt-6">
                                     <button type="submit" name="handle_sit_in" class="bg-indigo-500 text-white px-6 py-3 rounded-lg hover:bg-indigo-600 transition duration-200 ease-in-out transform hover:scale-105">
-                                        Log Sit-in
+                                        Sit-in
                                     </button>
                                 </div>
                             </form>

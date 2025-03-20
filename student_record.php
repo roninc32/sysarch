@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
             $sql = "INSERT INTO users (id_number, last_name, first_name, middle_name, course_level, password, email, course, address, profile_image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
+            $stmt->prepare($sql);
             $stmt->bind_param("ssssssssss", $id_number, $last_name, $first_name, $middle_name, $course_level, $hashed_password, $email, $course, $address, $profile_image);
 
             if ($stmt->execute()) {
@@ -42,16 +42,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// Fetch student records
-$sql_students = "SELECT * FROM users";
-$result_students = $conn->query($sql_students);
-$students = [];
-if ($result_students->num_rows > 0) {
-    while ($row = $result_students->fetch_assoc()) {
-        $students[] = $row;
-    }
+// Pagination settings
+$records_per_page = 10;
+$page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$offset = ($page - 1) * $records_per_page;
+
+// Get total number of records
+$total_records_query = "SELECT COUNT(*) as count FROM users";
+$total_records_result = $conn->query($total_records_query);
+$total_records = $total_records_result->fetch_assoc()['count'];
+$total_pages = ceil($total_records / $records_per_page);
+
+// Fetch student records with pagination
+$sql_students = "SELECT * FROM users ORDER BY id_number LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($sql_students);
+if ($stmt) {
+    $stmt->bind_param("ii", $records_per_page, $offset);
+    $stmt->execute();
+    $result_students = $stmt->get_result();
+    $students = $result_students->fetch_all(MYSQLI_ASSOC);
 } else {
-    echo "No student records found.";
+    echo "<script>alert('Error preparing statement: " . $conn->error . "');</script>";
+    $students = [];
 }
 
 $conn->close();
@@ -172,6 +184,63 @@ $conn->close();
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Pagination Controls -->
+            <?php if ($total_pages > 1): ?>
+                <div class="mt-6 flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        <?php if ($page > 1): ?>
+                            <a href="?page=<?php echo ($page - 1); ?>" class="px-3 py-1 bg-white text-gray-500 rounded-md border border-gray-300 hover:bg-gray-50">
+                                Previous
+                            </a>
+                        <?php endif; ?>
+
+                        <?php
+                        // Calculate range of page numbers to show
+                        $start_page = max(1, $page - 2);
+                        $end_page = min($total_pages, $page + 2);
+
+                        // Show first page if we're not starting at 1
+                        if ($start_page > 1) {
+                            echo '<a href="?page=1" class="px-3 py-1 bg-white text-gray-500 rounded-md border border-gray-300 hover:bg-gray-50">1</a>';
+                            if ($start_page > 2) {
+                                echo '<span class="px-3 py-1">...</span>';
+                            }
+                        }
+
+                        // Show page numbers
+                        for ($i = $start_page; $i <= $end_page; $i++) {
+                            if ($i == $page) {
+                                echo '<span class="px-3 py-1 bg-blue-500 text-white rounded-md">' . $i . '</span>';
+                            } else {
+                                echo '<a href="?page=' . $i . '" class="px-3 py-1 bg-white text-gray-500 rounded-md border border-gray-300 hover:bg-gray-50">' . $i . '</a>';
+                            }
+                        }
+
+                        // Show last page if we're not ending at total_pages
+                        if ($end_page < $total_pages) {
+                            if ($end_page < $total_pages - 1) {
+                                echo '<span class="px-3 py-1">...</span>';
+                            }
+                            echo '<a href="?page=' . $total_pages . '" class="px-3 py-1 bg-white text-gray-500 rounded-md border border-gray-300 hover:bg-gray-50">' . $total_pages . '</a>';
+                        }
+                        ?>
+
+                        <?php if ($page < $total_pages): ?>
+                            <a href="?page=<?php echo ($page + 1); ?>" class="px-3 py-1 bg-white text-gray-500 rounded-md border border-gray-300 hover:bg-gray-50">
+                                Next
+                            </a>
+                        <?php endif; ?>
+                    </nav>
+                </div>
+            <?php endif; ?>
+
+            <!-- Records info display -->
+            <div class="mt-4 text-center text-sm text-gray-600">
+                Showing <?php echo min(($page - 1) * $records_per_page + 1, $total_records); ?> to 
+                <?php echo min($page * $records_per_page, $total_records); ?> of 
+                <?php echo $total_records; ?> records
             </div>
         </div>
     </main>
