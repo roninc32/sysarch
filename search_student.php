@@ -254,7 +254,7 @@ document.getElementById('searchForm').addEventListener('submit', function(e) {
                                 <div>
                                     <p class="text-gray-600">Name</p>
                                     <p class="font-semibold text-gray-800">${student.name}</p>
-                                </div>z
+                                </div>
                                 <div>
                                     <p class="text-gray-600">Sessions Left</p>
                                     <p class="font-semibold text-gray-800">${student.sessions_left}</p>
