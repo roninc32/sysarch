@@ -70,11 +70,24 @@ $conn->close();
             --button-hover: #2563eb;
             --button-text: #ffffff;
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --table-header-bg: #f3f4f6;
-            --table-row-bg: #ffffff;
-            --table-row-hover: #f9fafb;
-            --table-border: #e5e7eb;
-            --table-text: #111827;
+            --chart-bg: #ffffff;
+            --chart-text: #111827;
+            --announcement-bg: #ffffff;
+            --announcement-text: #111827;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --border-color: #e5e7eb;
+            
+            /* Adding export button variables for light mode */
+            --export-button-bg: #ffffff;
+            --export-button-hover: #f3f4f6;
+            --export-pdf-color: #dc2626;
+            --export-excel-color: #059669;
+            --export-print-color: #2563eb;
+            --export-border-color: #e5e7eb;
+            --export-text-color: #374151;
+            --export-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .dark {
@@ -92,11 +105,24 @@ $conn->close();
             --button-hover: #60a5fa;
             --button-text: #f9fafb;
             --shadow-color: rgba(0, 0, 0, 0.3);
-            --table-header-bg: #374151;
-            --table-row-bg: #1f2937;
-            --table-row-hover: #2d3748;
-            --table-border: #4b5563;
-            --table-text: #f9fafb;
+            --chart-bg: #1f2937;
+            --chart-text: #f9fafb;
+            --announcement-bg: #1f2937;
+            --announcement-text: #f9fafb;
+            --accent-blue: #60a5fa;
+            --accent-green: #34d399;
+            --accent-yellow: #fbbf24;
+            --border-color: #374151;
+            
+            /* Adding export button variables for dark mode */
+            --export-button-bg: #1f2937;
+            --export-button-hover: #374151;
+            --export-pdf-color: #ef4444;
+            --export-excel-color: #10b981;
+            --export-print-color: #3b82f6;
+            --export-border-color: #374151;
+            --export-text-color: #e5e7eb;
+            --export-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
 
         body {
@@ -134,10 +160,21 @@ $conn->close();
 
         .card {
             background-color: var(--card-bg);
+            transition: transform 0.3s, box-shadow 0.3s;
             border-radius: 0.5rem;
             overflow: hidden;
-            box-shadow: 0 4px 6px var(--shadow-color);
-            border: 1px solid var(--table-border);
+            border: 1px solid var(--border-color);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px var(--shadow-color);
+        }
+
+        .card-header {
+            background-color: var(--card-header);
+            padding: 1rem 1.5rem;
+            font-weight: 600;
         }
 
         .btn-primary {
@@ -152,88 +189,55 @@ $conn->close();
         .btn-primary:hover {
             background-color: var(--button-hover);
         }
-
-        /* Tab styling */
-        .tab-button {
-            color: var(--text-secondary);
-            border-color: transparent;
-            transition: all 0.2s ease;
+        
+        /* Improved text styles for better readability */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.5rem;
         }
-
-        .tab-button.active {
-            color: var(--button-primary);
-            border-color: var(--button-primary);
+        
+        p, li {
+            line-height: 1.6;
         }
-
-        .tab-button:hover:not(.active) {
-            color: var(--text-primary);
-            border-color: var(--table-border);
+        
+        /* Enhanced contrast for content */
+        .text-enhanced {
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            line-height: 1.2;
         }
 
         /* Table styling */
         table {
-            border-color: var(--table-border);
+            border-color: var(--border-color);
         }
-
+        
         table thead {
             background-color: var(--table-header-bg);
         }
-
-        table thead th {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
+        
         table tbody tr {
-            background-color: var(--table-row-bg);
-            color: var(--table-text);
+            background-color: var(--card-bg);
         }
-
+        
         table tbody tr:hover {
             background-color: var(--table-row-hover);
         }
-
-        /* Status indicators */
-        .status-active {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: rgb(16, 185, 129);
+        
+        /* Star rating display */
+        .star-display {
+            color: #ccc;
         }
-
-        .dark .status-active {
-            background-color: rgba(16, 185, 129, 0.2);
-            color: rgb(52, 211, 153);
+        
+        .star-filled {
+            color: #ffb700;
         }
-
-        .status-extended {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: rgb(245, 158, 11);
-        }
-
-        .dark .status-extended {
-            background-color: rgba(245, 158, 11, 0.2);
-            color: rgb(251, 191, 36);
-        }
-
-        .status-overdue {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: rgb(239, 68, 68);
-        }
-
-        .dark .status-overdue {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: rgb(248, 113, 113);
-        }
-
-        /* Export buttons */
-        .export-button {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
-            font-weight: 500;
-        }
-
+        
         /* Toggle switch styling */
         .toggle-switch {
             position: relative;
@@ -241,13 +245,13 @@ $conn->close();
             width: 52px;
             height: 26px;
         }
-
+        
         .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-
+        
         .toggle-slider {
             position: absolute;
             cursor: pointer;
@@ -259,7 +263,7 @@ $conn->close();
             transition: .4s;
             border-radius: 34px;
         }
-
+        
         .toggle-slider:before {
             position: absolute;
             content: "";
@@ -271,15 +275,52 @@ $conn->close();
             transition: .4s;
             border-radius: 50%;
         }
-
+        
         input:checked + .toggle-slider {
             background-color: #3b82f6;
         }
-
+        
         input:checked + .toggle-slider:before {
             transform: translateX(26px);
         }
-
+        
+        /* Rating category colors */
+        .rating-excellent {
+            background-color: rgba(16, 185, 129, 0.15);
+            color: #047857;
+        }
+        .dark .rating-excellent {
+            background-color: rgba(16, 185, 129, 0.3);
+            color: #34d399;
+        }
+        
+        .rating-good {
+            background-color: rgba(59, 130, 246, 0.15);
+            color: #1d4ed8;
+        }
+        .dark .rating-good {
+            background-color: rgba(59, 130, 246, 0.3);
+            color: #60a5fa;
+        }
+        
+        .rating-average {
+            background-color: rgba(245, 158, 11, 0.15);
+            color: #b45309;
+        }
+        .dark .rating-average {
+            background-color: rgba(245, 158, 11, 0.3);
+            color: #fbbf24;
+        }
+        
+        .rating-poor {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: #b91c1c;
+        }
+        .dark .rating-poor {
+            background-color: rgba(239, 68, 68, 0.3);
+            color: #f87171;
+        }
+        
         /* Custom animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
@@ -288,6 +329,109 @@ $conn->close();
         
         .animate-fadeIn {
             animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        /* Animation for hover effect */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .hover-pulse:hover {
+            animation: pulse 1s infinite;
+        }
+        
+        /* Notifications */
+        .notification {
+            transition: opacity 0.5s ease-out;
+        }
+        
+        /* Redesigned export buttons */
+        .export-button-group {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .export-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            background-color: var(--export-button-bg);
+            border: 1px solid var(--export-border-color);
+            color: var(--export-text-color);
+            box-shadow: var(--export-shadow);
+        }
+        
+        .export-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .export-button i {
+            margin-right: 0.5rem;
+        }
+        
+        .export-button.pdf {
+            color: var(--export-pdf-color);
+        }
+        
+        .export-button.pdf:hover {
+            background-color: rgba(239, 68, 68, 0.1);
+            border-color: var(--export-pdf-color);
+        }
+        
+        .export-button.excel {
+            color: var(--export-excel-color);
+        }
+        
+        .export-button.excel:hover {
+            background-color: rgba(16, 185, 129, 0.1);
+            border-color: var(--export-excel-color);
+        }
+        
+        .export-button.print {
+            color: var(--export-print-color);
+        }
+        
+        .export-button.print:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: var(--export-print-color);
+        }
+        
+        /* Status badges */
+        .status-active {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--accent-green);
+        }
+        
+        .status-extended {
+            background-color: rgba(245, 158, 11, 0.1);
+            color: var(--accent-yellow);
+        }
+        
+        .status-overdue {
+            background-color: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+        
+        .dark .status-active {
+            background-color: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+        }
+        
+        .dark .status-extended {
+            background-color: rgba(245, 158, 11, 0.2);
+            color: #fbbf24;
+        }
+        
+        .dark .status-overdue {
+            background-color: rgba(239, 68, 68, 0.2);
+            color: #f87171;
         }
     </style>
 </head>
@@ -321,6 +465,10 @@ $conn->close();
                                 class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
                                 <i class="fas fa-users mr-2"></i> Students
                             </a>
+                            <a href="admin_reservation.php"
+                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-calendar-check mr-2"></i> Reservations
+                            </a>
                             <a href="sit_in_records.php"
                                 class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
                                 <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
@@ -328,6 +476,10 @@ $conn->close();
                             <a href="search_student.php"
                                 class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
                                 <i class="fas fa-search mr-2"></i> Search
+                            </a>
+                            <a href="feedback.php"
+                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-comments mr-2"></i> Feedback
                             </a>
                         </div>
                     </div>
@@ -344,7 +496,8 @@ $conn->close();
                     </div>
                     
                     <!-- Admin Logout -->
-                    <a href="admin_logout.php" class="btn-primary flex items-center">
+                    <a href="admin_logout.php" 
+                       class="btn-primary flex items-center">
                         <i class="fas fa-sign-out-alt mr-2"></i>Logout
                     </a>
                 </div>
@@ -361,6 +514,10 @@ $conn->close();
                     class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
                     <i class="fas fa-users mr-2"></i> Students
                 </a>
+                <a href="admin_reservation.php"
+                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-check mr-2"></i> Reservations
+                </a>
                 <a href="sit_in_records.php"
                     class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
                     <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
@@ -368,6 +525,10 @@ $conn->close();
                 <a href="search_student.php"
                     class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
                     <i class="fas fa-search mr-2"></i> Search
+                </a>
+                <a href="feedback.php"
+                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-comments mr-2"></i> Feedback
                 </a>
             </div>
         </div>
@@ -496,16 +657,16 @@ $conn->close();
                         <i class="fas fa-trash mr-2"></i>Clear All History
                     </button>
                     
-                    <!-- Export Buttons -->
-                    <div class="flex space-x-2">
-                        <button onclick="exportToPDF()" class="export-button text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 hover:bg-red-50 dark:hover:bg-red-900/30">
-                            <i class="fas fa-file-pdf mr-2"></i>PDF
+                    <!-- Updated Export Buttons -->
+                    <div class="export-button-group">
+                        <button onclick="exportToPDF()" class="export-button pdf">
+                            <i class="fas fa-file-pdf"></i>Export PDF
                         </button>
-                        <button onclick="exportToExcel()" class="export-button text-green-600 dark:text-green-400 border border-green-200 dark:border-green-900 hover:bg-green-50 dark:hover:bg-green-900/30">
-                            <i class="fas fa-file-excel mr-2"></i>Excel
+                        <button onclick="exportToExcel()" class="export-button excel">
+                            <i class="fas fa-file-excel"></i>Export Excel
                         </button>
-                        <button onclick="printTable()" class="export-button text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-900 hover:bg-blue-50 dark:hover:bg-blue-900/30">
-                            <i class="fas fa-print mr-2"></i>Print
+                        <button onclick="printTable()" class="export-button print">
+                            <i class="fas fa-print"></i>Print
                         </button>
                     </div>
                 </div>
@@ -663,68 +824,293 @@ $conn->close();
             }
         }
         
-        // Export to PDF function
+        // Enhanced Export to PDF function with better styling
         function exportToPDF() {
             // Setup jsPDF
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
             
-            // Add title
-            doc.setFontSize(18);
-            doc.text('Sit-in Session History Report', 14, 22);
+            // Full paths to images to ensure they load correctly
+            const ucLogoPath = window.location.origin + '/sysarch/assets/images/uc-main-logo.jpg';
+            const ccsLogoPath = window.location.origin + '/sysarch/assets/images/ccs-logo.png';
             
-            // Add date
-            doc.setFontSize(11);
+            console.log('Loading UC logo from:', ucLogoPath);
+            console.log('Loading CCS logo from:', ccsLogoPath);
+            
+            // Load and add logos with better error handling
+            const ucLogoImg = new Image();
+            ucLogoImg.crossOrigin = 'Anonymous'; // Try to avoid CORS issues
+            ucLogoImg.src = ucLogoPath;
+            
+            const ccsLogoImg = new Image();
+            ccsLogoImg.crossOrigin = 'Anonymous';
+            ccsLogoImg.src = ccsLogoPath;
+            
+            // Add title and basic info first
+            doc.setFontSize(20);
+            doc.setTextColor(59, 130, 246); // Blue heading
+            doc.text('Sit-in Session History Report', 14, 20);
+            
+            doc.setFontSize(12);
+            doc.setTextColor(75, 85, 99); // Gray text
             doc.text('Generated on: ' + new Date().toLocaleString(), 14, 30);
             
-            // Add the table using autotable plugin
-            doc.autoTable({ 
-                html: '#history-table',
-                startY: 35,
-                headStyles: { fillColor: [59, 130, 246], textColor: 255 },
-                alternateRowStyles: { fillColor: [240, 248, 255] }
+            // Try to add images directly without waiting
+            try {
+                // Increased opacity for better visibility
+                doc.setGlobalAlpha(0.2); // More visible watermark
+                
+                // Add UC logo 
+                doc.addImage(ucLogoPath, 'JPEG', 130, 10, 60, 60);
+                
+                // Add CCS logo
+                doc.addImage(ccsLogoPath, 'PNG', 10, 180, 60, 60);
+                
+                doc.setGlobalAlpha(1.0); // Reset transparency
+                console.log("Images added successfully to PDF");
+            } catch (e) {
+                console.error('Error adding logos directly:', e);
+                
+                // Fallback: Try to wait for images to load
+                Promise.all([
+                    new Promise(resolve => {
+                        ucLogoImg.onload = () => {
+                            console.log("UC logo loaded successfully");
+                            resolve();
+                        };
+                        ucLogoImg.onerror = (e) => {
+                            console.error("Error loading UC logo:", e);
+                            resolve();
+                        };
+                        // Fallback if image doesn't load
+                        setTimeout(resolve, 1000);
+                    }),
+                    new Promise(resolve => {
+                        ccsLogoImg.onload = () => {
+                            console.log("CCS logo loaded successfully");
+                            resolve();
+                        };
+                        ccsLogoImg.onerror = (e) => {
+                            console.error("Error loading CCS logo:", e);
+                            resolve();
+                        };
+                        // Fallback if image doesn't load
+                        setTimeout(resolve, 1000);
+                    })
+                ]).then(() => {
+                    try {
+                        // Try adding images again after load
+                        doc.setGlobalAlpha(0.2);
+                        doc.addImage(ucLogoImg, 'JPEG', 130, 10, 60, 60);
+                        doc.addImage(ccsLogoImg, 'PNG', 10, 180, 60, 60);
+                        doc.setGlobalAlpha(1.0);
+                        console.log("Images added via Promise approach");
+                    } catch (e) {
+                        console.error('Error adding logos after wait:', e);
+                    }
+                    
+                    // Continue with PDF generation regardless of image success
+                    finalizePDF();
+                });
+                
+                // Return early to avoid double-generation
+                return;
+            }
+            
+            // If we got here, the images were added successfully, continue with PDF
+            finalizePDF();
+            
+            // Function to complete the PDF generation
+            function finalizePDF() {
+                // Add the table using autotable plugin
+                doc.autoTable({ 
+                    html: '#history-table',
+                    startY: 40,
+                    headStyles: { 
+                        fillColor: [59, 130, 246], // Blue header
+                        textColor: 255,
+                        fontStyle: 'bold'
+                    },
+                    alternateRowStyles: { fillColor: [245, 250, 255] },
+                    styles: {
+                        lineWidth: 0.1,
+                        lineColor: [220, 220, 220]
+                    },
+                    // Customize column widths
+                    columnStyles: {
+                        0: {cellWidth: 20}, // ID Number
+                        1: {cellWidth: 30}, // Name
+                        2: {cellWidth: 25}, // Purpose
+                        6: {cellWidth: 25}, // Date
+                        7: {cellWidth: 20}  // Duration
+                    }
+                });
+                
+                // Add footer
+                const pageCount = doc.internal.getNumberOfPages();
+                for (let i = 1; i <= pageCount; i++) {
+                    doc.setPage(i);
+                    doc.setFontSize(10);
+                    doc.setTextColor(150, 150, 150);
+                    doc.text(
+                        'Page ' + i + ' of ' + pageCount,
+                        doc.internal.pageSize.getWidth() / 2,
+                        doc.internal.pageSize.getHeight() - 10,
+                        { align: 'center' }
+                    );
+                }
+                
+                // Save the PDF
+                doc.save('sit-in-history-report.pdf');
+            }
+        }
+
+        // Enhanced Export to Excel function with better formatting
+        function exportToExcel() {
+            // Get the table data
+            const table = document.getElementById('history-table');
+            
+            // Create workbook with custom styling
+            const workbook = XLSX.utils.table_to_book(table, {
+                sheet: "Sit-in History",
+                dateNF: 'yyyy-mm-dd'
             });
             
-            // Save the PDF
-            doc.save('sit-in-history-report.pdf');
+            // Apply some styling (limited options in SheetJS community edition)
+            const worksheet = workbook.Sheets["Sit-in History"];
+            
+            // Add title and note about branding
+            XLSX.utils.sheet_add_aoa(worksheet, [["University of Cebu - College of Computer Studies"]], {origin: "A1"});
+            XLSX.utils.sheet_add_aoa(worksheet, [["Sit-in Session History Report"]], {origin: "A2"});
+            XLSX.utils.sheet_add_aoa(worksheet, [["Generated on: " + new Date().toLocaleString()]], {origin: "A3"});
+            
+            // Save with a custom filename
+            XLSX.writeFile(workbook, 'sit-in-history-report-' + new Date().toLocaleDateString().replace(/\//g, '-') + '.xlsx');
         }
         
-        // Export to Excel function
-        function exportToExcel() {
-            const table = document.getElementById('history-table');
-            const workbook = XLSX.utils.table_to_book(table, {sheet: "Sit-in History"});
-            XLSX.writeFile(workbook, 'sit-in-history-report.xlsx');
-        }
-        
-        // Print function
+        // Enhanced Print function with better styling and logos
         function printTable() {
             const printContents = document.getElementById('history-records').innerHTML;
             const originalContents = document.body.innerHTML;
             
-            // Create a printable version
+            // Get full paths to images for reliable loading
+            const ucLogoPath = window.location.origin + '/sysarch/assets/images/uc-main-logo.jpg';
+            const ccsLogoPath = window.location.origin + '/sysarch/assets/images/ccs-logo.png';
+            
+            // Create a printable version with improved styling and logos
             const printView = `
                 <!DOCTYPE html>
                 <html>
                 <head>
                     <title>Sit-in History Report</title>
                     <style>
-                        body { font-family: Arial, sans-serif; }
-                        table { width: 100%; border-collapse: collapse; }
-                        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                        th { background-color: #f2f2f2; }
-                        h1 { text-align: center; }
-                        .header { margin-bottom: 20px; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 12px; }
+                        @page { size: landscape; margin: 10mm; }
+                        body { 
+                            font-family: 'Segoe UI', Arial, sans-serif;
+                            color: #333;
+                            line-height: 1.6;
+                            position: relative;
+                        }
+                        .logo-container {
+                            position: relative;
+                            width: 100%;
+                            height: 150px;
+                            margin-bottom: 20px;
+                        }
+                        .uc-logo {
+                            position: absolute;
+                            top: 0;
+                            right: 30px;
+                            width: 120px;
+                            height: auto;
+                            opacity: 0.3; /* More visible */
+                        }
+                        .ccs-logo {
+                            position: absolute;
+                            top: 0;
+                            left: 30px;
+                            width: 120px;
+                            height: auto;
+                            opacity: 0.3; /* More visible */
+                        }
+                        .watermark {
+                            position: absolute;
+                            opacity: 0.05;
+                            width: 70%;
+                            height: auto;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            z-index: -1;
+                            pointer-events: none;
+                        }
+                        table { 
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                        }
+                        th, td { 
+                            border: 1px solid #ddd;
+                            padding: 12px;
+                            text-align: left;
+                        }
+                        th { 
+                            background-color: #3b82f6;
+                            color: white;
+                            font-weight: bold;
+                            white-space: nowrap;
+                        }
+                        tr:nth-child(even) { background-color: #f9fafb; }
+                        tr:hover { background-color: #f3f4f6; }
+                        h1 { 
+                            text-align: center;
+                            color: #3b82f6;
+                            margin-bottom: 5px;
+                        }
+                        .header { 
+                            margin-bottom: 30px;
+                            border-bottom: 2px solid #e5e7eb;
+                            padding-bottom: 10px;
+                            text-align: center;
+                        }
+                        .date {
+                            text-align: center;
+                            color: #6b7280;
+                            font-style: italic;
+                        }
+                        .footer { 
+                            margin-top: 30px;
+                            text-align: center;
+                            font-size: 12px;
+                            color: #6b7280;
+                            border-top: 1px solid #e5e7eb;
+                            padding-top: 10px;
+                        }
+                        /* Hide export buttons in print */
+                        .export-button-group, .btn-primary, .pagination {
+                            display: none !important;
+                        }
                     </style>
                 </head>
                 <body>
+                    <!-- Logos in a container for better positioning -->
+                    <div class="logo-container">
+                        <img src="${ucLogoPath}" class="uc-logo" alt="UC Logo">
+                        <img src="${ccsLogoPath}" class="ccs-logo" alt="CCS Logo">
+                    </div>
+                    
+                    <!-- Also add a centered watermark for better visibility -->
+                    <img src="${ucLogoPath}" class="watermark" alt="Background Logo">
+                    
                     <div class="header">
-                        <h1>Sit-in History Report</h1>
-                        <p style="text-align: center;">Generated on: ${new Date().toLocaleString()}</p>
+                        <h1>University of Cebu - College of Computer Studies</h1>
+                        <h2 style="text-align: center; margin-top: 5px;">Sit-in History Report</h2>
+                        <p class="date">Generated on: ${new Date().toLocaleString()}</p>
                     </div>
                     <table>${document.getElementById('history-table').outerHTML}</table>
                     <div class="footer">
-                        <p>&copy; ${new Date().getFullYear()} Admin Portal</p>
+                        <p>© ${new Date().getFullYear()} UC College of Computer Studies - Laboratory System</p>
                     </div>
                 </body>
                 </html>
@@ -732,10 +1118,39 @@ $conn->close();
             
             // Set the document to our printable version
             document.body.innerHTML = printView;
+            
             // Print the document
             window.print();
+            
             // Restore original content
             document.body.innerHTML = originalContents;
+            
+            // Re-attach event listeners
+            document.getElementById('mobile-menu-button').addEventListener('click', function() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            });
+            
+            // Re-initialize dark mode toggle
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            if (localStorage.getItem('theme') === 'dark') {
+                darkModeToggle.checked = true;
+                document.documentElement.classList.add('dark');
+            }
+            
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            // Re-initialize tab functionality
+            const urlParams = new URLSearchParams(window.location.search);
+            const tab = urlParams.get('tab') || 'current';
+            switchTab(tab);
         }
     </script>
 </body>

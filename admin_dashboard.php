@@ -450,6 +450,10 @@ $conn->close();
                                 class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
                                 <i class="fas fa-users mr-2"></i> Students
                             </a>
+                            <a href="admin_reservation.php"
+                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-calendar-check mr-2"></i> Reservations
+                            </a>
                             <a href="sit_in_records.php"
                                 class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
                                 <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
@@ -457,6 +461,10 @@ $conn->close();
                             <a href="search_student.php"
                                 class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
                                 <i class="fas fa-search mr-2"></i> Search
+                            </a>
+                            <a href="feedback.php"
+                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                                <i class="fas fa-comments mr-2"></i> Feedback
                             </a>
                         </div>
                     </div>
@@ -491,6 +499,10 @@ $conn->close();
                     class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
                     <i class="fas fa-users mr-2"></i> Students
                 </a>
+                <a href="admin_reservation.php"
+                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-calendar-check mr-2"></i> Reservations
+                </a>
                 <a href="sit_in_records.php"
                     class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
                     <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
@@ -498,6 +510,10 @@ $conn->close();
                 <a href="search_student.php"
                     class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
                     <i class="fas fa-search mr-2"></i> Search
+                </a>
+                <a href="feedback.php"
+                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                    <i class="fas fa-comments mr-2"></i> Feedback
                 </a>
             </div>
         </div>

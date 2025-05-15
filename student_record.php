@@ -143,6 +143,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_student'])) {
     }
 }
 
+// Handle point granting
+if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['grant_points'])) {
+    $student_id = $_POST['student_id'];
+    $points_to_add = (int)$_POST['points_to_add'];
+    
+    if ($points_to_add <= 0) {
+        echo "<script>alert('Please enter a valid number of points.');</script>";
+    } else {
+        $update_sql = "UPDATE users SET points = points + ? WHERE id_number = ?";
+        $stmt = $conn->prepare($update_sql);
+        $stmt->bind_param("is", $points_to_add, $student_id);
+        
+        if ($stmt->execute()) {
+            echo "<script>alert('Points added successfully!');</script>";
+            echo "<script>window.location.href = window.location.href;</script>";
+        } else {
+            echo "<script>alert('Error adding points: " . $stmt->error . "');</script>";
+        }
+    }
+}
+
 // Fetch student records with pagination
 $records_per_page = 10;
 $page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
@@ -265,7 +286,7 @@ $conn->close();
 
         .nav-link.active {
             background-color: var(--button-primary);
-            color: var(--button-text);
+            color: var (--button-text);
             font-weight: 600;
         }
 
@@ -410,7 +431,7 @@ $conn->close();
                 <div class="relative flex items-center justify-between h-16">
                     <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
                         <button type="button" id="mobile-menu-button"
-                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none">
+                            class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
                             <span class="sr-only">Open main menu</span>
                             <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                 stroke="currentColor" aria-hidden="true">
@@ -425,17 +446,29 @@ $conn->close();
                         </div>
                         <div class="hidden sm:block sm:ml-6">
                             <div class="flex space-x-4">
-                                <a href="admin_dashboard.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                                    <i class="fas fa-home mr-2"></i>Dashboard
+                                <a href="admin_dashboard.php"
+                                    class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
+                                    <i class="fas fa-home mr-2"></i> Dashboard
                                 </a>
-                                <a href="student_record.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                                    <i class="fas fa-users mr-2"></i>Students
+                                <a href="student_record.php"
+                                    class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
+                                    <i class="fas fa-users mr-2"></i> Students
                                 </a>
-                                <a href="sit_in_records.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                                    <i class="fas fa-clipboard-list mr-2"></i>Sit-in Records
+                                <a href="admin_reservation.php"
+                                    class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                                    <i class="fas fa-calendar-check mr-2"></i> Reservations
                                 </a>
-                                <a href="search_student.php" class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                                    <i class="fas fa-search mr-2"></i>Search
+                                <a href="sit_in_records.php"
+                                    class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
+                                    <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
+                                </a>
+                                <a href="search_student.php"
+                                    class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
+                                    <i class="fas fa-search mr-2"></i> Search
+                                </a>
+                                <a href="feedback.php"
+                                    class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                                    <i class="fas fa-comments mr-2"></i> Feedback
                                 </a>
                             </div>
                         </div>
@@ -467,11 +500,17 @@ $conn->close();
                     <a href="student_record.php" class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
                         <i class="fas fa-users mr-2"></i>Students
                     </a>
+                    <a href="admin_reservation.php" class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-calendar-check mr-2"></i>Reservations
+                    </a>
                     <a href="sit_in_records.php" class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
                         <i class="fas fa-clipboard-list mr-2"></i>Sit-in Records
                     </a>
                     <a href="search_student.php" class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
                         <i class="fas fa-search mr-2"></i>Search
+                    </a>
+                    <a href="feedback.php" class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                        <i class="fas fa-comments mr-2"></i>Feedback
                     </a>
                 </div>
             </div>
@@ -509,6 +548,7 @@ $conn->close();
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Last Name</th>
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Email</th>
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Sessions Left</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Points</th>
                             <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
@@ -528,6 +568,11 @@ $conn->close();
                                             <span><?php echo htmlspecialchars($student['sessions_left']); ?></span>
                                         <?php endif; ?>
                                     </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <span class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 py-1 px-2 rounded-full">
+                                            <?php echo isset($student['points']) ? htmlspecialchars($student['points']) : '0'; ?>
+                                        </span>
+                                    </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm">
                                         <div class="flex items-center space-x-2">
                                             <!-- Reset Sessions Button -->
@@ -538,6 +583,12 @@ $conn->close();
                                                     <i class="fas fa-redo mr-1"></i>Reset
                                                 </button>
                                             </form>
+
+                                            <!-- Grant Points Button -->
+                                            <button onclick='openPointsModal("<?php echo htmlspecialchars($student['id_number']); ?>", "<?php echo htmlspecialchars($student['first_name']); ?> <?php echo htmlspecialchars($student['last_name']); ?>")' 
+                                                    class="bg-yellow-500 hover:bg-yellow-600 text-white py-1 px-2 rounded-md text-xs">
+                                                <i class="fas fa-gift mr-1"></i>Points
+                                            </button>
 
                                             <!-- Edit Button -->
                                             <button onclick='openEditModal(<?php echo json_encode($student); ?>)' 
@@ -559,7 +610,7 @@ $conn->close();
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                <td colspan="8" class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                     No student records found.
                                 </td>
                             </tr>
@@ -756,6 +807,34 @@ $conn->close();
         </div>
     </div>
 
+    <!-- Points Modal -->
+    <div id="pointsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md modal-content">
+            <div class="mt-3">
+                <h3 class="text-lg font-bold mb-4 border-b pb-2 border-gray-200 dark:border-gray-700">Grant Points</h3>
+                <form method="post" class="space-y-4" onsubmit="return confirmPointsGrant()">
+                    <input type="hidden" name="grant_points" value="1">
+                    <input type="hidden" name="student_id" id="points_student_id">
+                    
+                    <div class="mb-4">
+                        <p class="text-sm">Granting points to: <strong id="student_name_display"></strong></p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Number of Points to Add</label>
+                        <input type="number" name="points_to_add" min="1" required class="mt-1 block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <p class="text-xs text-gray-500 mt-1">3 points can be converted to 1 session by the student.</p>
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button type="button" onclick="closePointsModal()" class="px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md hover:bg-gray-50 dark:hover:bg-gray-600">Cancel</button>
+                        <button type="submit" class="btn-primary bg-yellow-500 hover:bg-yellow-600">Grant Points</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Initialize theme handling
         function initTheme() {
@@ -811,6 +890,19 @@ $conn->close();
             document.body.style.overflow = ''; // Allow scrolling
         }
         
+        // Points modal functions
+        function openPointsModal(studentId, studentName) {
+            document.getElementById('points_student_id').value = studentId;
+            document.getElementById('student_name_display').textContent = studentName;
+            document.getElementById('pointsModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent scrolling
+        }
+
+        function closePointsModal() {
+            document.getElementById('pointsModal').classList.add('hidden');
+            document.body.style.overflow = ''; // Allow scrolling
+        }
+        
         // Confirmation functions
         function confirmRegistration() {
             return confirm('Are you sure you want to register this student?');
@@ -832,6 +924,10 @@ $conn->close();
             return confirm('Are you sure you want to delete this student? This action cannot be undone.');
         }
         
+        function confirmPointsGrant() {
+            return confirm('Are you sure you want to grant these points to the student?');
+        }
+        
         // Event listeners
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize theme
@@ -849,6 +945,7 @@ $conn->close();
             window.addEventListener('click', function(event) {
                 const registrationModal = document.getElementById('registrationModal');
                 const editModal = document.getElementById('editModal');
+                const pointsModal = document.getElementById('pointsModal');
                 
                 if (event.target === registrationModal) {
                     closeModal();
@@ -857,12 +954,17 @@ $conn->close();
                 if (event.target === editModal) {
                     closeEditModal();
                 }
+                
+                if (event.target === pointsModal) {
+                    closePointsModal();
+                }
             });
             
             document.addEventListener('keydown', function(event) {
                 if (event.key === 'Escape') {
                     closeModal();
                     closeEditModal();
+                    closePointsModal();
                 }
             });
         });

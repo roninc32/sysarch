@@ -34,7 +34,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         if (password_verify($password, $row["password"])) {
             $_SESSION["username"] = $id_number; // Change to id_number
-            header("Location: dashboard.php");
+            $_SESSION["is_admin"] = isset($row["is_admin"]) ? $row["is_admin"] : 0;
+            
+            if ($_SESSION["is_admin"] == 1) {
+                header("Location: admin_dashboard.php");
+            } else {
+                header("Location: dashboard.php");
+            }
             exit();
         } else {
             $passwordError = "Invalid password.";
