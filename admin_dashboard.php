@@ -131,6 +131,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['handle_sit_in'])) {
     }
 }
 
+// Fetch recent reservations for notifications - Using sitin_reservation table
+$sql_recent_reservations = "SELECT sr.id, sr.student_name, sr.purpose, sr.laboratory, 
+                           sr.pc_number, sr.time_in, sr.date, sr.status
+                           FROM sitin_reservation sr 
+                           WHERE sr.status = 'pending'
+                           ORDER BY sr.id DESC 
+                           LIMIT 10";
+$result_reservations = $conn->query($sql_recent_reservations);
+$recent_reservations = [];
+$notification_count = 0;
+
+if ($result_reservations && $result_reservations->num_rows > 0) {
+    while ($row = $result_reservations->fetch_assoc()) {
+        $recent_reservations[] = $row;
+    }
+    $notification_count = count($recent_reservations);
+}
+
 // Secure Logout
 if (isset($_GET['logout'])) {
     session_unset();
@@ -819,6 +837,101 @@ $conn->close();
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 90;
         }
+        
+        .notification-badge {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .notification-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+        
+        .notification-item:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+        
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+        
+        .notification-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+        
+        .notification-time {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .notification-content {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .notification-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        
+        .notification-meta {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .notification-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .notification-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .notification-bell {
+            position: relative;
+            padding: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+        }
+        
+        .notification-bell:hover {
+            color: var(--accent-color);
+        }
+        
+        .notification-bell.has-notifications {
+            color: var(--accent-color);
+        }
     </style>
 </head>
 <body>
@@ -912,6 +1025,13 @@ $conn->close();
                     <input type="text" placeholder="Search" class="search-input">
                 </div>
                 
+                <div class="notification-bell <?php echo $notification_count > 0 ? 'has-notifications' : ''; ?>">
+                    <i class="fas fa-bell text-xl"></i>
+                    <?php if ($notification_count > 0): ?>
+                        <span class="notification-badge"><?php echo $notification_count; ?></span>
+                    <?php endif; ?>
+                </div>
+                
                 <div class="theme-toggle">
                     <i class="fas fa-sun"></i>
                     <label class="switch">
@@ -962,6 +1082,73 @@ $conn->close();
             
             <!-- Content Panels -->
             <div class="panels-grid">
+                <!-- Add the New Reservation Notifications Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-bell text-yellow-500"></i>
+                            <span>Reservation Requests</span>
+                            <?php if ($notification_count > 0): ?>
+                                <span class="ml-2 bg-red-500 text-white text-xs rounded-full px-2 py-1"><?php echo $notification_count; ?> new</span>
+                            <?php endif; ?>
+                        </h2>
+                        <a href="admin_reservation.php" class="btn btn-outline text-sm">View All</a>
+                    </div>
+                    
+                    <div class="panel-content p-0">
+                        <?php if (empty($recent_reservations)): ?>
+                            <div class="text-center py-10">
+                                <i class="fas fa-calendar-check text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
+                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No pending reservations</p>
+                                <p class="text-base text-gray-600 dark:text-gray-400">New requests will appear here</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <?php foreach ($recent_reservations as $reservation): ?>
+                                    <div class="notification-item">
+                                        <div class="notification-header">
+                                            <div class="notification-title">
+                                                <?php echo htmlspecialchars($reservation['student_name']); ?>
+                                            </div>
+                                            <div class="notification-time">
+                                                <?php 
+                                                    $reservationDate = strtotime($reservation['date']);
+                                                    echo date('M d', $reservationDate); 
+                                                    echo ' at ' . date('g:i A', strtotime($reservation['time_in']));
+                                                ?>
+                                            </div>
+                                        </div>
+                                        <div class="notification-content">
+                                            Requested a sit-in session for <?php echo htmlspecialchars($reservation['purpose']); ?>
+                                        </div>
+                                        <div class="notification-footer">
+                                            <div class="notification-meta">
+                                                <div class="notification-tag">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    <span>Lab <?php echo htmlspecialchars($reservation['laboratory']); ?></span>
+                                                </div>
+                                                <div class="notification-tag bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200">
+                                                    <i class="fas fa-clock"></i>
+                                                    <span>Pending</span>
+                                                </div>
+                                            </div>
+                                            <div class="notification-actions">
+                                                <a href="admin_reservation.php?action=approve&id=<?php echo $reservation['id']; ?>" class="btn btn-sm bg-green-500 text-white hover:bg-green-600">Approve</a>
+                                                <a href="admin_reservation.php?action=reject&id=<?php echo $reservation['id']; ?>" class="btn btn-sm bg-red-500 text-white hover:bg-red-600">Reject</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                            <div class="p-4 text-center">
+                                <a href="admin_reservation.php" class="text-blue-500 hover:underline text-sm font-medium">
+                                    View all reservation requests
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
                 <!-- Announcements Panel -->
                 <div class="panel">
                     <div class="panel-header">
@@ -1385,6 +1572,18 @@ $conn->close();
                     }
                 }
             });
+        });
+        
+        // Notification bell click to scroll to notifications panel
+        document.querySelector('.notification-bell').addEventListener('click', function() {
+            const notificationPanel = document.querySelector('.panel-title i.fas.fa-bell').closest('.panel');
+            notificationPanel.scrollIntoView({ behavior: 'smooth' });
+            
+            // Highlight the panel briefly
+            notificationPanel.classList.add('ring-2', 'ring-accent-color', 'ring-opacity-50');
+            setTimeout(() => {
+                notificationPanel.classList.remove('ring-2', 'ring-accent-color', 'ring-opacity-50');
+            }, 2000);
         });
     </script>
 </body>
