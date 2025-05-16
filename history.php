@@ -10,12 +10,19 @@ include 'config.php';
 
 $id_number = $_SESSION["username"];
 // Get student name for feedback
-$sql_user = "SELECT first_name, last_name FROM users WHERE id_number='$id_number'";
+$sql_user = "SELECT first_name, last_name, profile_image, course, course_level FROM users WHERE id_number='$id_number'";
 $result_user = $conn->query($sql_user);
 $user_name = "";
+$profile_image = 'assets/images/profile.jpg';
+$course = "";
+$course_level = "";
 if ($result_user->num_rows > 0) {
     $user_data = $result_user->fetch_assoc();
     $user_name = $user_data['first_name'] . ' ' . $user_data['last_name'];
+    $profile_image = isset($user_data["profile_image"]) && !empty($user_data["profile_image"]) ? $user_data["profile_image"] : 'assets/images/profile.jpg';
+    $first_name = $user_data["first_name"];
+    $course = $user_data["course"];
+    $course_level = $user_data["course_level"];
 }
 
 $sql = "SELECT r.*, CASE WHEN f.id IS NOT NULL THEN 1 ELSE 0 END AS has_feedback 
@@ -47,213 +54,413 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en" class="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reservation History</title>
+    <title>Session History</title>
     <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Color variables for light/dark mode */
         :root {
-            --bg-primary: #f9fafb;
-            --bg-secondary: #f3f4f6;
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
             --accent-light: #dbeafe;
-            --card-bg: #ffffff;
-            --card-border: #e5e7eb;
-            --nav-bg: #ffffff;
-            --nav-border: #e5e7eb;
-            --button-bg: #2563eb;
-            --button-hover: #1d4ed8;
-            --button-text: #ffffff;
-            --input-border: #d1d5db;
-            --input-bg: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --red: #ef4444;
-            --green: #10b981;
-            --yellow: #f59e0b;
-            --table-header-bg: #f3f4f6;
-            --table-bg: #ffffff;
-            --table-border: #e5e7eb;
-            --table-row-hover: #f9fafb;
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --card-bg: #fff;
+            --section-title-color: #94a3b8;
         }
 
         .dark {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --accent-color: #3b82f6;
-            --accent-hover: #60a5fa;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
             --accent-light: #1e3a8a;
-            --card-bg: #1f2937;
-            --card-border: #374151;
-            --nav-bg: #111827;
-            --nav-border: #374151;
-            --button-bg: #3b82f6;
-            --button-hover: #60a5fa;
-            --button-text: #ffffff;
-            --input-border: #4b5563;
-            --input-bg: #374151;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-            --red: #f87171;
-            --green: #34d399;
-            --yellow: #fbbf24;
-            --table-header-bg: #374151;
-            --table-bg: #1f2937;
-            --table-border: #374151;
-            --table-row-hover: #2d3748;
+            --accent-hover: #60a5fa;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+            --card-bg: #1e293b;
+            --section-title-color: #64748b;
         }
-        
+
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
-        
-        /* Simple card design */
-        .card {
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
             background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
             transition: all 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar-header {
+            height: 70px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            z-index: 10;
         }
         
-        .card:hover {
-            box-shadow: var(--shadow-md);
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        /* Clean navigation */
-        nav {
-            background-color: var(--nav-bg);
-            border-bottom: 1px solid var(--nav-border);
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
         }
         
-        .nav-link {
-            color: var(--text-secondary);
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
         }
         
-        .nav-link:hover {
-            color: var(--accent-color);
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 12px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--section-title-color);
+            letter-spacing: 0.05em;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
             background-color: var(--bg-secondary);
         }
         
-        .nav-link.active {
+        .nav-item.active {
+            background-color: var(--accent-light);
             color: var(--accent-color);
-            font-weight: 600;
         }
         
-        /* Button styles */
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-            font-weight: 500;
-            display: inline-flex;
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
             align-items: center;
             justify-content: center;
+            margin-right: 12px;
+            color: var(--text-secondary);
         }
         
-        .btn-primary {
-            background-color: var(--button-bg);
-            color: var(--button-text);
+        .nav-item.active .nav-icon {
+            color: var(--accent-color);
         }
         
-        .btn-primary:hover {
-            background-color: var(--button-hover);
+        .user-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
         }
         
-        /* Toggle switch */
-        .toggle-switch {
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-info:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .main-content {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .topbar {
+            height: 70px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 240px;
+        }
+        
+        .search-input {
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            flex: 1;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .search-icon {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var (--text-secondary);
+        }
+        
+        .switch {
             position: relative;
             display: inline-block;
-            width: 52px;
-            height: 26px;
+            width: 44px;
+            height: 22px;
         }
         
-        .toggle-switch input {
+        .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
         
-        .toggle-slider {
+        .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--input-border);
+            background-color: var(--bg-secondary);
             transition: .4s;
             border-radius: 34px;
         }
         
-        .toggle-slider:before {
+        .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
         
-        input:checked + .toggle-slider {
+        input:checked + .slider {
             background-color: var(--accent-color);
         }
         
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
         
-        /* Table styling */
-        table {
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0;
+        .content-area {
+            padding: 24px;
+            flex: 1;
         }
         
-        table thead {
-            background-color: var(--table-header-bg);
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
         
-        table th {
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-title {
             font-weight: 600;
-            text-align: left;
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--table-border);
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        table td {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--table-border);
-            vertical-align: middle;
+        .card-title i {
+            color: var(--accent-color);
         }
         
-        table tbody tr {
-            background-color: var(--table-bg);
-            transition: background-color 0.2s;
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
         
-        table tbody tr:hover {
-            background-color: var(--table-row-hover);
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
         }
         
         /* Star rating */
@@ -269,7 +476,7 @@ $conn->close();
         
         .star-rating label {
             cursor: pointer;
-            color: var(--star-default, #d1d5db);
+            color: #d1d5db;
             font-size: 1.75rem;
             padding: 0 0.1rem;
             transition: color 0.2s;
@@ -278,7 +485,7 @@ $conn->close();
         .star-rating label:hover,
         .star-rating label:hover ~ label,
         .star-rating input:checked ~ label {
-            color: var(--star-active, #ffb700);
+            color: #ffb700;
         }
         
         /* Modal styling */
@@ -294,244 +501,265 @@ $conn->close();
             box-shadow: var(--shadow-md);
         }
         
-        /* Search & filter items */
-        .search-input {
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-primary);
-        }
-        
-        /* Date filter dropdown */
         .date-filter-dropdown {
             background-color: var(--card-bg);
             border: 1px solid var(--card-border);
             max-height: 250px;
             overflow-y: auto;
             border-radius: 0.5rem;
+            z-index: 20;
         }
         
-        .date-filter-option {
-            transition: background-color 0.2s;
-            color: var(--text-primary);
-        }
-        
-        .date-filter-option:hover {
-            background-color: var(--bg-secondary);
-        }
-        
-        /* Simple fade in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 100;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .topbar {
+                padding: 0 16px;
+            }
+            
+            .menu-toggle {
+                display: block !important;
+            }
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen flex flex-col">
-    <!-- Simple Navigation Bar -->
-    <nav class="sticky top-0 z-50 px-4 py-2">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center">
-                <span class="text-lg font-semibold hidden md:block">Student Portal</span>
-                <div class="hidden md:flex items-center ml-8 space-x-1">
-                    <a href="dashboard.php" class="nav-link">
-                        <i class="fas fa-home mr-2"></i> Home
-                    </a>
-                    <a href="edit_student_info.php" class="nav-link">
-                        <i class="fas fa-user mr-2"></i> Profile
-                    </a>
-                    <a href="history.php" class="nav-link active">
-                        <i class="fas fa-history mr-2"></i> History
-                    </a>
-                    <a href="reservation.php" class="nav-link">
-                        <i class="fas fa-calendar mr-2"></i> Reservation
-                    </a>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-laptop-code"></i>
                 </div>
+                <div class="logo-text">SIT-IN Portal</div>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <a href="dashboard.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-home"></i></div>
+                    <span>Dashboard</span>
+                </a>
             </div>
             
-            <div class="flex items-center space-x-4">
-                <!-- Dark Mode Toggle -->
-                <div class="flex items-center">
-                    <span class="mr-2 text-sm"><i class="fas fa-sun"></i></span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="darkModeToggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span class="ml-2 text-sm"><i class="fas fa-moon"></i></span>
-                </div>
-                
-                <!-- Logout Button -->
-                <a href="logout.php" class="btn btn-primary bg-red-500 hover:bg-red-600 hidden md:flex">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
+            <div class="sidebar-section">
+                <div class="section-title">Account</div>
+                <a href="edit_student_info.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-user"></i></div>
+                    <span>Profile</span>
                 </a>
-                
-                <!-- Mobile menu button -->
-                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <a href="history.php" class="nav-item active">
+                    <div class="nav-icon"><i class="fas fa-history"></i></div>
+                    <span>Session History</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Actions</div>
+                <a href="reservation.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar"></i></div>
+                    <span>Make a Reservation</span>
+                </a>
+                <a href="view_schedule.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
+                    <span>View Schedules</span>
+                </a>
+                <a href="view_resources.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-cube"></i></div>
+                    <span>Browse Resources</span>
+                </a>
             </div>
         </div>
         
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden hidden mt-2 pb-2">
-            <a href="dashboard.php" class="nav-link block mb-1">
-                <i class="fas fa-home mr-2"></i> Home
-            </a>
-            <a href="edit_student_info.php" class="nav-link block mb-1">
-                <i class="fas fa-user mr-2"></i> Profile
-            </a>
-            <a href="history.php" class="nav-link block mb-1 active">
-                <i class="fas fa-history mr-2"></i> History
-            </a>
-            <a href="reservation.php" class="nav-link block mb-1">
-                <i class="fas fa-calendar mr-2"></i> Reservation
-            </a>
-            <!-- Logout Button in mobile menu -->
-            <a href="logout.php" class="nav-link block mb-1 text-red-600 dark:text-red-400">
-                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-            </a>
-        </div>
-    </nav>
-
-    <div class="container mx-auto px-4 py-6 flex-grow">
-        <div class="mb-6 fade-in">
-            <h1 class="text-2xl font-bold">Reservation History</h1>
-            <p class="text-sm text-gray-600 dark:text-gray-400">View your past sit-in sessions</p>
-        </div>
-        
-        <div class="card fade-in">
-            <div class="p-6">
-                <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                    <div class="w-full md:w-1/2">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-3">
-                                <i class="fas fa-search text-gray-400"></i>
-                            </span>
-                            <input type="text" id="searchInput" 
-                                class="search-input w-full pl-10 pr-4 py-2 border rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                                placeholder="Search by lab, purpose, date...">
-                        </div>
-                    </div>
-                    <div class="relative">
-                        <button id="filterDateBtn" class="flex items-center px-3 py-2 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                            <i class="fas fa-calendar-alt mr-2"></i> Filter by Date
-                        </button>
-                        <!-- Date filter dropdown -->
-                        <div id="dateFilterDropdown" class="hidden absolute right-0 mt-2 w-64 rounded-lg shadow-lg z-20 date-filter-dropdown">
-                            <div class="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
-                                <h3 class="font-medium text-sm">Select Date</h3>
-                                <button id="clearDateFilter" class="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">Clear Filter</button>
-                            </div>
-                            <div class="p-2">
-                                <div class="mb-2">
-                                    <button id="showAllDates" class="w-full text-left px-3 py-2 rounded-md date-filter-option transition-colors text-sm">
-                                        Show All Dates
-                                    </button>
-                                </div>
-                                <?php foreach ($dates as $date): ?>
-                                <div class="date-option">
-                                    <button data-date="<?php echo $date; ?>" class="w-full text-left px-3 py-2 rounded-md date-filter-option transition-colors text-sm">
-                                        <?php echo date('F d, Y (D)', strtotime($date)); ?>
-                                    </button>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                    </div>
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar"><?php echo substr($first_name, 0, 1); ?></div>
+                <div class="user-details">
+                    <div class="user-name"><?php echo $first_name . ' ' . (isset($last_name) ? $last_name : ''); ?></div>
+                    <div class="user-role"><?php echo $course . ' - ' . $course_level; ?></div>
                 </div>
-
-                <div class="overflow-x-auto rounded-lg">
-                    <table class="min-w-full border rounded-lg overflow-hidden">
-                        <thead>
-                            <tr>
-                                <th>Lab #</th>
-                                <th class="hidden md:table-cell">Purpose</th>
-                                <th>Date</th>
-                                <th class="hidden md:table-cell">Login Time</th>
-                                <th class="hidden md:table-cell">Logout Time</th>
-                                <th>Status</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reservationTable">
-                            <?php if (empty($reservations)): ?>
-                                <tr>
-                                    <td colspan="7" class="py-8 text-center">
-                                        <div class="flex flex-col items-center">
-                                            <i class="fas fa-calendar-times text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                                            <p class="text-lg font-medium">No sit-in history found</p>
-                                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Your previous lab sessions will appear here</p>
-                                            <a href="reservation.php" class="btn btn-primary">
-                                                Create a New Reservation
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($reservations as $index => $reservation): 
-                                    $hasLogout = !empty($reservation['logout_time']) && $reservation['logout_time'] != '00:00:00';
-                                    $status = $hasLogout ? 'Completed' : 'Ongoing/Incomplete';
-                                    $statusClass = $hasLogout ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200';
-                                    $reservationDate = date('Y-m-d', strtotime($reservation['date']));
-                                    $hasFeedback = isset($reservation['has_feedback']) && $reservation['has_feedback'] == 1;
-                                ?>
-                                    <tr class="reservation-row" data-date="<?php echo $reservationDate; ?>">
-                                        <td>
-                                            <span class="font-medium">Lab <?php echo htmlspecialchars($reservation['lab_number']); ?></span>
-                                        </td>
-                                        <td class="hidden md:table-cell">
-                                            <?php echo htmlspecialchars($reservation['sit_in_purpose']); ?>
-                                        </td>
-                                        <td>
-                                            <?php echo date('M d, Y', strtotime($reservation['date'])); ?>
-                                        </td>
-                                        <td class="hidden md:table-cell">
-                                            <?php echo date('h:i A', strtotime($reservation['login_time'])); ?>
-                                        </td>
-                                        <td class="hidden md:table-cell">
-                                            <?php echo $hasLogout ? date('h:i A', strtotime($reservation['logout_time'])) : 'N/A'; ?>
-                                        </td>
-                                        <td>
-                                            <span class="px-2 py-1 rounded-full text-xs <?php echo $statusClass; ?>">
-                                                <?php echo $status; ?>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <?php if ($hasLogout): ?>
-                                                <?php if ($hasFeedback): ?>
-                                                    <span class="text-gray-400 flex items-center" title="Feedback submitted">
-                                                        <i class="fas fa-check-circle"></i>
-                                                        <span class="ml-1 hidden sm:inline text-xs">Feedback submitted</span>
-                                                    </span>
-                                                <?php else: ?>
-                                                    <button onclick="openFeedbackModal(<?php echo htmlspecialchars($reservation['id']); ?>, '<?php echo htmlspecialchars($reservation['lab_number']); ?>', '<?php echo date('M d, Y', strtotime($reservation['date'])); ?>')"
-                                                        class="text-blue-500 hover:text-blue-700 flex items-center" title="Leave Feedback">
-                                                        <i class="fas fa-comment-dots"></i>
-                                                        <span class="ml-1 hidden sm:inline text-xs">Submit feedback</span>
-                                                    </button>
-                                                <?php endif; ?>
-                                            <?php endif; ?>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                <div>
+                    <a href="logout.php" title="Logout">
+                        <i class="fas fa-sign-out-alt text-gray-400 hover:text-red-500"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Main content -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="flex items-center">
+                <button class="menu-toggle mr-4" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Session History</h1>
+            </div>
+            
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search..." class="search-input">
                 </div>
                 
-                <!-- No results message -->
-                <div id="noResults" class="hidden py-8 text-center">
-                    <div class="flex flex-col items-center">
-                        <i class="fas fa-search text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
-                        <p class="text-lg font-medium">No matching records found</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Try adjusting your search criteria</p>
-                        <button id="resetSearch" class="btn btn-primary">
-                            Reset Search
-                        </button>
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Session History Card -->
+            <div class="card mb-6">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-history"></i>
+                        <span>Your Sit-In Sessions</span>
+                    </h2>
+                    <button id="filterDateBtn" class="btn btn-outline">
+                        <i class="fas fa-calendar-alt mr-2"></i> Filter by Date
+                    </button>
+                </div>
+                
+                <div class="p-6">
+                    <!-- Date filter dropdown -->
+                    <div id="dateFilterDropdown" class="hidden absolute right-10 mt-2 w-64 rounded-lg shadow-lg z-20 date-filter-dropdown">
+                        <div class="p-3 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+                            <h3 class="font-medium text-sm">Select Date</h3>
+                            <button id="clearDateFilter" class="text-xs text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">Clear Filter</button>
+                        </div>
+                        <div class="p-2">
+                            <div class="mb-2">
+                                <button id="showAllDates" class="w-full text-left px-3 py-2 rounded-md date-filter-option transition-colors text-sm">
+                                    Show All Dates
+                                </button>
+                            </div>
+                            <?php foreach ($dates as $date): ?>
+                            <div class="date-option">
+                                <button data-date="<?php echo $date; ?>" class="w-full text-left px-3 py-2 rounded-md date-filter-option transition-colors text-sm">
+                                    <?php echo date('F d, Y (D)', strtotime($date)); ?>
+                                </button>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full bg-transparent">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lab #</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Purpose</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Login Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Logout Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservationTable" class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <?php if (empty($reservations)): ?>
+                                    <tr>
+                                        <td colspan="7" class="py-8 text-center">
+                                            <div class="flex flex-col items-center">
+                                                <i class="fas fa-calendar-times text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
+                                                <p class="text-lg font-medium">No sit-in history found</p>
+                                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Your previous lab sessions will appear here</p>
+                                                <a href="reservation.php" class="btn btn-primary">
+                                                    Create a New Reservation
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php else: ?>
+                                    <?php foreach ($reservations as $index => $reservation): 
+                                        $hasLogout = !empty($reservation['logout_time']) && $reservation['logout_time'] != '00:00:00';
+                                        $status = $hasLogout ? 'Completed' : 'Ongoing/Incomplete';
+                                        $statusClass = $hasLogout ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200';
+                                        $reservationDate = date('Y-m-d', strtotime($reservation['date']));
+                                        $hasFeedback = isset($reservation['has_feedback']) && $reservation['has_feedback'] == 1;
+                                    ?>
+                                        <tr class="reservation-row hover:bg-gray-50 dark:hover:bg-gray-700" data-date="<?php echo $reservationDate; ?>">
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <span class="font-medium">Lab <?php echo htmlspecialchars($reservation['lab_number']); ?></span>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <?php echo htmlspecialchars($reservation['sit_in_purpose']); ?>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <?php echo date('M d, Y', strtotime($reservation['date'])); ?>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <?php echo date('h:i A', strtotime($reservation['login_time'])); ?>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <?php echo $hasLogout ? date('h:i A', strtotime($reservation['logout_time'])) : 'N/A'; ?>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <span class="px-2 py-1 rounded-full text-xs <?php echo $statusClass; ?>">
+                                                    <?php echo $status; ?>
+                                                </span>
+                                            </td>
+                                            <td class="px-4 py-4 whitespace-nowrap">
+                                                <?php if ($hasLogout): ?>
+                                                    <?php if ($hasFeedback): ?>
+                                                        <span class="text-gray-400 flex items-center" title="Feedback submitted">
+                                                            <i class="fas fa-check-circle"></i>
+                                                            <span class="ml-1 hidden sm:inline text-xs">Feedback submitted</span>
+                                                        </span>
+                                                    <?php else: ?>
+                                                        <button onclick="openFeedbackModal(<?php echo htmlspecialchars($reservation['id']); ?>, '<?php echo htmlspecialchars($reservation['lab_number']); ?>', '<?php echo date('M d, Y', strtotime($reservation['date'])); ?>')"
+                                                            class="btn btn-sm btn-outline flex items-center" title="Leave Feedback">
+                                                            <i class="fas fa-comment-dots mr-1"></i> Feedback
+                                                        </button>
+                                                    <?php endif; ?>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- No results message -->
+                    <div id="noResults" class="hidden py-8 text-center">
+                        <div class="flex flex-col items-center">
+                            <i class="fas fa-search text-4xl mb-4 text-gray-300 dark:text-gray-600"></i>
+                            <p class="text-lg font-medium">No matching records found</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Try adjusting your search criteria</p>
+                            <button id="resetSearch" class="btn btn-primary">
+                                Reset Search
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -600,7 +828,7 @@ $conn->close();
                 
                 <div class="flex justify-end space-x-3">
                     <button type="button" onclick="closeFeedbackModal()" 
-                        class="px-4 py-2 rounded-md bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-white hover:bg-gray-400 dark:hover:bg-gray-500">
+                        class="btn btn-outline">
                         Cancel
                     </button>
                     <button type="submit" class="btn btn-primary">
@@ -610,41 +838,33 @@ $conn->close();
             </form>
         </div>
     </div>
-    
-    <!-- Footer -->
-    <footer class="mt-8 py-6 border-t border-gray-200 dark:border-gray-800">
-        <div class="container mx-auto px-4">
-            <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    &copy; <?php echo date('Y'); ?> Student Portal | College of Computer Studies
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    Version 2.0
-                </p>
-            </div>
-        </div>
-    </footer>
 
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+        });
+        
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.style.display = 'none';
         });
         
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const html = document.documentElement;
         
-        // Check for saved theme preference
+        // Check for saved theme preference or use system preference
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        if (savedTheme === 'dark' || (!savedTheme && darkModeMediaQuery.matches)) {
             html.classList.add('dark');
             darkModeToggle.checked = true;
         }
         
-        // Toggle theme when button is clicked
         darkModeToggle.addEventListener('change', function() {
             if (this.checked) {
                 html.classList.add('dark');
@@ -653,6 +873,11 @@ $conn->close();
                 html.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
             }
+        });
+
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button').addEventListener('click', function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
         });
         
         // Search functionality

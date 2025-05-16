@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 16, 2025 at 08:32 AM
+-- Generation Time: May 15, 2025 at 06:37 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -74,7 +74,8 @@ CREATE TABLE `announcements` (
 
 INSERT INTO `announcements` (`id`, `title`, `content`, `created_at`) VALUES
 (2, '', 'The College of Computer Studies will open the registration of students for the Sit-in privilege starting tomorrow. Thank you! Lab Supervisor', '2025-03-11 03:23:29'),
-(4, '', 'Important Announcement We are excited to announce the launch of our new website! 🎉 Explore our latest products and services now!', '2025-03-11 03:29:08');
+(4, '', 'Important Announcement We are excited to announce the launch of our new website! 🎉 Explore our latest products and services now!', '2025-03-11 03:29:08'),
+(5, '', 'Make an amazing announcement for yourself quickly & easily in minutes with our free online announcement maker Customize a template or create a striking announcement from scratch to get the word out there about your business.', '2025-03-11 03:29:56');
 
 -- --------------------------------------------------------
 
@@ -102,57 +103,6 @@ INSERT INTO `feedback` (`id`, `reservation_id`, `user_id`, `lab_number`, `rating
 (1, 24, '1', '524', 5, 'fasfaf', 0, '', '2025-04-27 04:54:49'),
 (2, 23, '1', '524', 4, 'dvsrwe', 0, '', '2025-04-27 05:05:56'),
 (3, 26, '2', '524', 5, 'orayt', 0, '', '2025-04-27 10:43:15');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `lab_schedules`
---
-
-CREATE TABLE `lab_schedules` (
-  `id` int(11) NOT NULL,
-  `lab_number` varchar(50) NOT NULL,
-  `day_of_week` varchar(20) NOT NULL,
-  `start_time` time NOT NULL,
-  `end_time` time NOT NULL,
-  `professor` varchar(255) DEFAULT NULL,
-  `subject` varchar(255) DEFAULT NULL,
-  `is_available` tinyint(1) DEFAULT 1,
-  `notes` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `lab_schedules`
---
-
-INSERT INTO `lab_schedules` (`id`, `lab_number`, `day_of_week`, `start_time`, `end_time`, `professor`, `subject`, `is_available`, `notes`, `created_at`, `updated_at`) VALUES
-(2, 'MAC Laboratory', 'Monday', '20:30:00', '21:30:00', 'Ferolino', 'Infosec', 1, '', '2025-05-15 19:27:23', '2025-05-15 19:27:23'),
-(3, 'MAC Laboratory', 'Monday', '16:00:00', '18:00:00', 'Gayo', 'Intprog', 0, '', '2025-05-15 19:39:44', '2025-05-15 19:39:44'),
-(4, 'MAC Laboratory', 'Tuesday', '10:30:00', '13:00:00', 'Salimbangon', 'Sysarch', 1, '', '2025-05-15 19:40:38', '2025-05-15 19:40:38');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `notifications`
---
-
-CREATE TABLE `notifications` (
-  `id` int(11) NOT NULL,
-  `type` varchar(50) NOT NULL,
-  `message` text NOT NULL,
-  `reference_id` int(11) DEFAULT NULL,
-  `is_read` tinyint(1) NOT NULL DEFAULT 0,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `notifications`
---
-
-INSERT INTO `notifications` (`id`, `type`, `message`, `reference_id`, `is_read`, `created_at`) VALUES
-(1, 'reservation', 'Ronin cabusao (ID: 1) submitted a reservation for C programming in Lab 524', 32, 1, '2025-05-15 14:08:52');
 
 -- --------------------------------------------------------
 
@@ -328,11 +278,7 @@ INSERT INTO `reservations` (`id`, `id_number`, `name`, `sit_in_purpose`, `lab_nu
 (28, '1', 'Ronin cabusao', 'C Programming', '526', NULL, '08:40:00', '00:00:00', '2025-04-28', 0, 'pending', NULL, NULL, '2025-04-27 20:38:53'),
 (29, '1', 'Ronin cabusao', 'C Programming', '526', NULL, '08:40:00', '00:43:28', '2025-04-28', 0, 'pending', NULL, NULL, '2025-04-27 22:43:28'),
 (30, '1', 'Ronin cabusao', 'C programming', '524', NULL, '00:44:39', NULL, '2025-04-28', 0, 'pending', NULL, NULL, '2025-04-27 22:44:39'),
-(31, '1', 'Ronin cabusao', 'C programming', '524', NULL, '00:44:39', '00:45:16', '2025-04-28', 0, 'pending', NULL, NULL, '2025-04-27 22:45:16'),
-(32, '1', 'Ronin cabusao', 'C programming', '524', NULL, '16:08:52', NULL, '2025-05-15', 0, 'pending', NULL, NULL, '2025-05-15 14:08:52'),
-(33, '1', 'Ronin cabusao', 'C programming', '524', NULL, '16:08:52', '16:40:45', '2025-05-15', 0, 'pending', NULL, NULL, '2025-05-15 14:40:45'),
-(34, '1', 'Ronin cabusao', 'C programming', '524', NULL, '07:22:04', NULL, '2025-05-16', 0, 'pending', NULL, NULL, '2025-05-16 05:22:04'),
-(35, '1', 'Ronin cabusao', 'C programming', '524', NULL, '07:22:04', '07:22:18', '2025-05-16', 0, 'pending', NULL, NULL, '2025-05-16 05:22:18');
+(31, '1', 'Ronin cabusao', 'C programming', '524', NULL, '00:44:39', '00:45:16', '2025-04-28', 0, 'pending', NULL, NULL, '2025-04-27 22:45:16');
 
 -- --------------------------------------------------------
 
@@ -371,28 +317,6 @@ INSERT INTO `reservations_backup` (`id`, `id_number`, `name`, `sit_in_purpose`, 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `resources`
---
-
-CREATE TABLE `resources` (
-  `id` int(11) NOT NULL,
-  `name` varchar(255) NOT NULL,
-  `professor` varchar(255) NOT NULL,
-  `description` text DEFAULT NULL,
-  `file_path` varchar(255) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `resources`
---
-
-INSERT INTO `resources` (`id`, `name`, `professor`, `description`, `file_path`, `created_at`) VALUES
-(1, 'Sysarch', 'Jeff Salimbangon', 'liva lkainckjq mkqlmcwklc jasd', 'uploads/resources/1747336606_sit-in-history-report-4-29-2025.xlsx', '2025-05-15 19:16:46');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `sitin_reservation`
 --
 
@@ -422,8 +346,7 @@ INSERT INTO `sitin_reservation` (`id`, `student_name`, `purpose`, `laboratory`, 
 (3, 'Ronin  cabusao', 'C# Programming', '526', NULL, '18:00:00', '2025-04-29', 27, 'disapproved', 'you have violation\r\n', '2025-04-29 03:18:23', NULL, NULL),
 (4, 'Ronin  cabusao', 'C# Programming', '526', 'PC 12', '18:00:00', '2025-04-29', 26, 'approved', '', '2025-04-29 01:59:12', NULL, NULL),
 (5, 'Ronin  cabusao', 'ASP.NET Programming', '530', 'PC 12', '19:42:00', '2025-04-29', 25, 'pending', NULL, NULL, NULL, NULL),
-(6, 'Ronin  cabusao', 'C Programming', '526', 'PC 3', '21:23:00', '2025-04-29', 24, 'pending', NULL, NULL, NULL, NULL),
-(7, 'John  Doe', 'Java Programming', '524', 'PC 46', '14:49:00', '2025-05-16', 29, 'pending', NULL, NULL, NULL, NULL);
+(6, 'Ronin  cabusao', 'C Programming', '526', 'PC 3', '21:23:00', '2025-04-29', 24, 'pending', NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -475,8 +398,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `id_number`, `last_name`, `is_admin`, `first_name`, `middle_name`, `course_level`, `password`, `confirm_password`, `email`, `course`, `address`, `created_at`, `profile_image`, `sessions_left`, `points`) VALUES
-(11, '1', 'cabusao', 0, 'Ronin', '', '3rd Year', '$2y$10$.qaSB9ub6ifoUejICj0HAusC9tgTCHv4di8hivOhp63vMkkoL1gKK', '', 'ronin@gmail.com', 'Information Technology', 'Cebu City', '2025-03-19 12:44:06', 'assets/images/profile.jpg', 26, 3),
-(12, '2', 'Doe', 0, 'John', '', '2nd Year', '$2y$10$C21pyh8Y6J7H1TE8.SLXa./jv4a9amb5qVZxo3T8E1JQpHKtM8ItK', '', 'john@gmail.com', 'Software Engineering', 'Manila City', '2025-03-19 18:28:52', 'assets/uploads/profile_2_1747344657.jpg', 28, 1),
+(11, '1', 'cabusao', 0, 'Ronin', '', '3rd Year', '$2y$10$.qaSB9ub6ifoUejICj0HAusC9tgTCHv4di8hivOhp63vMkkoL1gKK', '', 'ronin@gmail.com', 'Information Technology', 'Cebu City', '2025-03-19 12:44:06', 'assets/images/profile.jpg', 28, 3),
+(12, '2', 'Doe', 0, 'John', '', '2nd Year', '$2y$10$C21pyh8Y6J7H1TE8.SLXa./jv4a9amb5qVZxo3T8E1JQpHKtM8ItK', '', 'john@gmail.com', 'Software Engineering', 'Manila City', '2025-03-19 18:28:52', 'assets/uploads/profile_2_1745750484.jpg', 28, 1),
 (13, '3', 'Marcus', 0, 'Damascus', '', '1st Year', '$2y$10$ZtT2TImDR/Hz/LTeUbhm..s0GPVhoENvLqmWXRjIlaTVa34eeEaEC', '', 'marcus@gmail.com', 'Computer Science', 'Pasig City', '2025-03-19 18:29:53', 'assets/images/profile.jpg', 30, 0),
 (14, '4', 'Montana', 0, 'Hanna', '', '1st Year', '$2y$10$6T3H5hmWIjrbIEh4BtMnXOrrKEttIic/PUhXZiqyGp63gtwMPuHdO', '', 'hannah@email.com', 'Computer Science', 'Japan', '2025-04-29 00:23:42', 'assets/images/profile.jpg', 30, 0),
 (15, '5', 'Parker', 0, 'Peter', '', '1st Year', '$2y$10$1HOqbFc6rGY5wVMo4Ij2ZuUDC0ivu62E0IUHWt1yXxtj05ruC69dO', '', 'peter@email.com', 'Computer Science', 'Ohio', '2025-04-29 00:24:13', 'assets/images/profile.jpg', 30, 0);
@@ -513,18 +436,6 @@ ALTER TABLE `feedback`
   ADD KEY `idx_feedback_reservation` (`reservation_id`);
 
 --
--- Indexes for table `lab_schedules`
---
-ALTER TABLE `lab_schedules`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `notifications`
---
-ALTER TABLE `notifications`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `pc_sessions`
 --
 ALTER TABLE `pc_sessions`
@@ -556,12 +467,6 @@ ALTER TABLE `reservations_backup`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `resources`
---
-ALTER TABLE `resources`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `sitin_reservation`
 --
 ALTER TABLE `sitin_reservation`
@@ -588,7 +493,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `active_sit_ins`
 --
 ALTER TABLE `active_sit_ins`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `admin_logs`
@@ -609,18 +514,6 @@ ALTER TABLE `feedback`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `lab_schedules`
---
-ALTER TABLE `lab_schedules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT for table `notifications`
---
-ALTER TABLE `notifications`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT for table `pc_sessions`
 --
 ALTER TABLE `pc_sessions`
@@ -636,7 +529,7 @@ ALTER TABLE `pc_status`
 -- AUTO_INCREMENT for table `reservations`
 --
 ALTER TABLE `reservations`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `reservations_backup`
@@ -645,16 +538,10 @@ ALTER TABLE `reservations_backup`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
--- AUTO_INCREMENT for table `resources`
---
-ALTER TABLE `resources`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
 -- AUTO_INCREMENT for table `sitin_reservation`
 --
 ALTER TABLE `sitin_reservation`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `sit_in_history`

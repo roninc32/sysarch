@@ -207,610 +207,723 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['handle_sit_in'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search Student</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <style>
-        /* Dark mode variables - matching admin dashboard */
         :root {
-            --bg-primary: #f0f9ff;
-            --bg-secondary: #dbeafe;
-            --text-primary: #111827;
-            --text-secondary: #374151;
-            --card-bg: #ffffff;
-            --card-header: #bfdbfe;
-            --nav-bg: #ffffff;
-            --nav-text: #111827;
-            --nav-hover-bg: #3b82f6;
-            --nav-hover-text: #ffffff;
-            --button-primary: #3b82f6;
-            --button-hover: #2563eb;
-            --button-text: #ffffff;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --chart-bg: #ffffff;
-            --chart-text: #111827;
-            --announcement-bg: #ffffff;
-            --announcement-text: #111827;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --border-color: #e5e7eb;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: #dbeafe;
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --card-bg: #fff;
+            --section-title-color: #94a3b8;
         }
 
         .dark {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #e5e7eb;
-            --card-bg: #1f2937;
-            --card-header: #2d3748;
-            --nav-bg: #111827;
-            --nav-text: #f9fafb;
-            --nav-hover-bg: #3b82f6;
-            --nav-hover-text: #ffffff;
-            --button-primary: #3b82f6;
-            --button-hover: #60a5fa;
-            --button-text: #f9fafb;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --chart-bg: #1f2937;
-            --chart-text: #f9fafb;
-            --announcement-bg: #1f2937;
-            --announcement-text: #f9fafb;
-            --accent-blue: #60a5fa;
-            --accent-green: #34d399;
-            --accent-yellow: #fbbf24;
-            --border-color: #374151;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-light: #1e3a8a;
+            --accent-hover: #60a5fa;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+            --card-bg: #1e293b;
+            --section-title-color: #64748b;
         }
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            line-height: 1.5;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
 
-        nav {
-            background-color: var(--nav-bg);
-            box-shadow: 0 2px 4px var(--shadow-color);
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
-        .nav-link {
-            color: var(--nav-text);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
+        .sidebar-header {
+            height: 70px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            font-weight: 500;
-        }
-
-        .nav-link:hover {
-            background-color: var(--nav-hover-bg);
-            color: var(--nav-hover-text);
-        }
-
-        .nav-link.active {
-            background-color: var(--button-primary);
-            color: var(--button-text);
-            font-weight: 600;
-        }
-
-        .card {
+            position: sticky;
+            top: 0;
             background-color: var(--card-bg);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-radius: 0.5rem;
+            z-index: 10;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 12px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--section-title-color);
+            letter-spacing: 0.05em;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .nav-item.active {
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--accent-color);
+        }
+        
+        .user-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-info:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
             overflow: hidden;
-            border: 1px solid var(--border-color);
-        }
-
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px var(--shadow-color);
-        }
-
-        .card-header {
-            background-color: var(--card-header);
-            padding: 1rem 1.5rem;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background-color: var(--button-primary);
-            color: var(--button-text);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-            font-weight: 500;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--button-hover);
+            text-overflow: ellipsis;
         }
         
-        /* Improved text styles for better readability */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
-        }
-        
-        p, li {
-            line-height: 1.6;
-        }
-        
-        /* Enhanced contrast for content */
-        .text-enhanced {
-            font-weight: 500;
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-
-        /* Table styling */
-        table {
-            border-color: var(--border-color);
+        .main-content {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
         
-        table thead {
-            background-color: var(--table-header-bg);
-        }
-        
-        table tbody tr {
+        .topbar {
+            height: 70px;
             background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         
-        table tbody tr:hover {
-            background-color: var(--table-row-hover);
+        .page-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
         }
-
-        /* Star rating display */
-        .star-display {
-            color: #ccc;
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
         }
-
-        .star-filled {
-            color: #ffb700;
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 240px;
         }
-
-        /* Toggle switch styling */
-        .toggle-switch {
+        
+        .search-input {
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            flex: 1;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .search-icon {
+            color: var (--text-secondary);
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .switch {
             position: relative;
             display: inline-block;
-            width: 52px;
-            height: 26px;
+            width: 44px;
+            height: 22px;
         }
-
-        .toggle-switch input {
+        
+        .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-
-        .toggle-slider {
+        
+        .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: var(--bg-secondary);
             transition: .4s;
             border-radius: 34px;
         }
-
-        .toggle-slider:before {
+        
+        .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
-
-        input:checked + .toggle-slider {
-            background-color: #3b82f6;
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Rating category colors */
-        .rating-excellent {
-            background-color: rgba(16, 185, 129, 0.15);
-            color: #047857;
-        }
-
-        .dark .rating-excellent {
-            background-color: rgba(16, 185, 129, 0.3);
-            color: #34d399;
+        
+        input:checked + .slider {
+            background-color: var(--accent-color);
         }
         
-        .rating-good {
-            background-color: rgba(59, 130, 246, 0.15);
-            color: #1d4ed8;
-        }
-
-        .dark .rating-good {
-            background-color: rgba(59, 130, 246, 0.3);
-            color: #60a5fa;
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
         
-        .rating-average {
-            background-color: rgba(245, 158, 11, 0.15);
-            color: #b45309;
-        }
-
-        .dark .rating-average {
-            background-color: rgba(245, 158, 11, 0.3);
-            color: #fbbf24;
+        .content-area {
+            padding: 24px;
+            flex: 1;
         }
         
-        .rating-poor {
-            background-color: rgba(239, 68, 68, 0.15);
-            color: #b91c1c;
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
-
-        .dark .rating-poor {
-            background-color: rgba(239, 68, 68, 0.3);
-            color: #f87171;
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
-
-        /* Custom animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
         }
-
-        .animate-fadeIn {
-            animation: fadeIn 0.5s ease-out forwards;
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
         }
-
-        /* Animation for hover effect */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
         }
-
-        .hover-pulse:hover {
-            animation: pulse 1s infinite;
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
         }
-
-        /* Notifications */
-        .notification {
-            transition: opacity 0.5s ease-out;
+        
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 100;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: block !important;
+            }
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <!-- Navigation Bar - Updated to match admin dashboard -->
-    <nav class="sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                    <button type="button" id="mobile-menu-button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+<body>
+    <!-- Sidebar with categories -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-laptop-code"></i>
                 </div>
-                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center">
-                        <span class="text-xl font-bold hidden lg:block">Admin Portal</span>
-                    </div>
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space-x-4">
-                            <a href="admin_dashboard.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-home mr-2"></i> Dashboard
-                            </a>
-                            <a href="student_record.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-users mr-2"></i> Students
-                            </a>
-                            <a href="admin_reservation.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-calendar-check mr-2"></i> Reservations
-                            </a>
-                            <a href="sit_in_records.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
-                            </a>
-                            <a href="search_student.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-search mr-2"></i> Search
-                            </a>
-                            <a href="feedback.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-comments mr-2"></i> Feedback
-                            </a>
-                        </div>
-                    </div>
+                <div class="logo-text">SIT-IN Admin</div>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <a href="admin_dashboard.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Management</div>
+                <a href="student_record.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-user-graduate"></i></div>
+                    <span>Students</span>
+                </a>
+                <a href="admin_reservation.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <span>Reservations</span>
+                </a>
+                <a href="sit_in_records.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <span>Sit-in Records</span>
+                </a>
+                <a href="search_student.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-search"></i></div>
+                    <span>Search</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Features</div>
+                <a href="schedule.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
+                    <span>Schedules</span>
+                </a>
+                <a href="feedback.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-comments"></i></div>
+                    <span>Feedback</span>
+                </a>
+                <a href="resources.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-cube"></i></div>
+                    <span>Resources</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">System Administrator</div>
                 </div>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 space-x-3">
-                    <!-- Dark Mode Toggle -->
-                    <div class="flex items-center mr-4">
-                        <span class="mr-2 text-sm"><i class="fas fa-sun"></i></span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="darkModeToggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="ml-2 text-sm"><i class="fas fa-moon"></i></span>
-                    </div>
-                    <!-- Admin Logout -->
-                    <a href="admin_logout.php" 
-                       class="btn-primary flex items-center">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                <div>
+                    <a href="admin_logout.php" title="Logout">
+                        <i class="fas fa-sign-out-alt text-gray-400 hover:text-red-500"></i>
                     </a>
                 </div>
             </div>
         </div>
-        <div class="sm:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="admin_dashboard.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-home mr-2"></i> Dashboard
-                </a>
-                <a href="student_record.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-users mr-2"></i> Students
-                </a>
-                <a href="admin_reservation.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-calendar-check mr-2"></i> Reservations
-                </a>
-                <a href="sit_in_records.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
-                </a>
-                <a href="search_student.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-search mr-2"></i> Search
-                </a>
-                <a href="feedback.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-comments mr-2"></i> Feedback
-                </a>
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Main content area -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="flex items-center">
+                <button class="menu-toggle mr-4" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Search Student</h1>
+            </div>
+            
+            <div class="topbar-actions">
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <div class="container mx-auto p-6 flex-grow">
-        <div class="card shadow-lg animate-fadeIn">
-            <div class="card-header flex items-center">
-                <i class="fas fa-search mr-3 text-blue-500 dark:text-blue-400"></i>
-                <h1 class="text-xl font-bold">Search Student</h1>
-            </div>
-            <div class="p-6">
-                <p class="text-gray-600 dark:text-gray-400 mb-6">Enter student ID or name to search for student records</p>
-                <form id="searchForm" class="mb-8">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <input type="text" 
-                            id="searchInput" 
-                            name="search" 
-                            placeholder="Enter student ID or name" 
-                            required 
-                            class="flex-1 p-3 border rounded-lg shadow-sm"
-                            autocomplete="off">
-                        <button type="submit" class="btn-primary">
-                            <i class="fas fa-search mr-2"></i>Search
-                        </button>
-                    </div>
-                </form>
-                <div id="result"></div>
+        
+        <div class="content-area">
+            <div class="card">
+                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-bold flex items-center">
+                        <i class="fas fa-search mr-3 text-blue-500"></i>
+                        Student Lookup
+                    </h2>
+                    <p class="text-sm text-gray-600 dark:text-gray-400">Search for students by ID or name to manage sit-in sessions</p>
+                </div>
+                
+                <div class="p-6">
+                    <form id="searchForm" class="mb-6">
+                        <div class="flex flex-col md:flex-row gap-4">
+                            <input type="text" 
+                                id="searchInput" 
+                                name="search" 
+                                placeholder="Enter student ID or name" 
+                                required 
+                                class="flex-1 p-3 border rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                autocomplete="off">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-search mr-2"></i>Search
+                            </button>
+                        </div>
+                    </form>
+                    <div id="result"></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer --> 
-    <footer class="mt-auto py-4 border-t border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50">
-        <div class="container mx-auto px-4">
-            <div class="text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                <p>&copy; <?php echo date('Y'); ?> Admin Portal. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
-
-<script>
-    // Mobile menu toggle
-    document.getElementById('mobile-menu-button').addEventListener('click', function() {
-        document.getElementById('mobile-menu').classList.toggle('hidden');
-    });
-
-    // Dark mode toggle functionality
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const html = document.documentElement;
-
-    // Check for saved theme preference or use system preference
-    const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    const savedTheme = localStorage.getItem('theme');
-
-    if (savedTheme === 'dark' || (!savedTheme && darkModeMediaQuery.matches)) {
-        html.classList.add('dark');
-        darkModeToggle.checked = true;
-    }
-
-    // Toggle theme when button is clicked
-    darkModeToggle.addEventListener('change', function() {
-        if (this.checked) {
+    <script>
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+        });
+        
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.style.display = 'none';
+        });
+        
+        // Dark mode toggle functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or use system preference
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        const savedTheme = localStorage.getItem('theme');
+        
+        if (savedTheme === 'dark' || (!savedTheme && darkModeMediaQuery.matches)) {
             html.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            html.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
+            darkModeToggle.checked = true;
         }
-    });
+        
+        // Toggle theme when button is clicked
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            }
+        });
 
-    document.getElementById('searchForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const searchInput = document.getElementById('searchInput').value;
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const searchInput = document.getElementById('searchInput').value;
 
-        // Show loading state
-        const resultContainer = document.getElementById('result');
-        resultContainer.innerHTML = `
-            <div class="flex justify-center items-center p-8">
-                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-            </div>
-        `;
+            // Show loading state
+            const resultContainer = document.getElementById('result');
+            resultContainer.innerHTML = `
+                <div class="flex justify-center items-center p-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                </div>
+            `;
 
-        fetch(`?search=${encodeURIComponent(searchInput)}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                if (data.success) {
-                    const student = data.student;
-                    if (student.has_active_sitin) {
-                        resultContainer.innerHTML = `
-                            <div class="card shadow-md">
-                                <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 px-4 py-3 mb-4">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-exclamation-circle mr-2"></i>
-                                        <span>This student already has an active sit-in session!</span>
-                                    </div>
-                                </div>
-                                <div class="p-6">
-                                    <h2 class="text-xl font-bold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">Student Details</h2>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">ID Number</p>
-                                            <p class="font-semibold">${student.id_number}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">Name</p>
-                                            <p class="font-semibold">${student.name}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">Sessions Left</p>
-                                            <p class="font-semibold">${student.sessions_left}</p>
+            fetch(`?search=${encodeURIComponent(searchInput)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        const student = data.student;
+                        if (student.has_active_sitin) {
+                            resultContainer.innerHTML = `
+                                <div class="card">
+                                    <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 px-4 py-3 mb-4">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-exclamation-circle mr-2"></i>
+                                            <span>This student already has an active sit-in session!</span>
                                         </div>
                                     </div>
+                                    <div class="p-6">
+                                        <h2 class="text-xl font-bold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">Student Details</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                            <div>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">ID Number</p>
+                                                <p class="font-semibold">${student.id_number}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">Name</p>
+                                                <p class="font-semibold">${student.name}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">Sessions Left</p>
+                                                <p class="font-semibold">${student.sessions_left}</p>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        `;
+                            `;
+                        } else {
+                            resultContainer.innerHTML = `
+                                <div class="card">
+                                    <div class="p-6">
+                                        <h2 class="text-xl font-bold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">Student Details</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                            <div>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">ID Number</p>
+                                                <p class="font-semibold">${student.id_number}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">Name</p>
+                                                <p class="font-semibold">${student.name}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-gray-500 dark:text-gray-400 text-sm">Sessions Left</p>
+                                                <p class="font-semibold">${student.sessions_left}</p>
+                                            </div>
+                                        </div>
+
+                                        <h3 class="text-lg font-bold mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">Log Sit-in Activity</h3>
+                                        <form method="post" action="search_student.php" class="space-y-4" onsubmit="return logSitInActivity()">
+                                            <input type="hidden" name="id_number" value="${student.id_number}">
+                                            <input type="hidden" name="name" value="${student.name}">
+                                            <input type="hidden" name="sessions_left" value="${student.sessions_left}">
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label class="block text-gray-500 dark:text-gray-400 text-sm mb-2">Purpose</label>
+                                                    <select name="purpose" required class="w-full p-3 border rounded-lg shadow-sm">
+                                                        <option value="C programming">C programming</option>
+                                                        <option value="Java programming">Java programming</option>
+                                                        <option value="C# programming">C# programming</option>
+                                                        <option value="PHP programming">PHP programming</option>
+                                                        <option value="ASP.NET programming">ASP.NET programming</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-gray-500 dark:text-gray-400 text-sm mb-2">Lab</label>
+                                                    <select name="lab" required class="w-full p-3 border rounded-lg shadow-sm">
+                                                        <option value="524">524</option>
+                                                        <option value="526">526</option>
+                                                        <option value="528">528</option>
+                                                        <option value="530">530</option>
+                                                        <option value="MAC Laboratory">Mac Laboratory</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div>
+                                                <label class="block text-gray-500 dark:text-gray-400 text-sm mb-2">PC Number (Optional)</label>
+                                                <input type="text" name="pc_number" placeholder="Enter PC number" class="w-full p-3 border rounded-lg shadow-sm">
+                                            </div>
+                                            
+                                            <div class="flex justify-end mt-6">
+                                                <button type="submit" name="handle_sit_in" class="btn btn-primary">
+                                                    <i class="fas fa-sign-in-alt mr-2"></i>Start Sit-in Session
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            `;
+                        }
                     } else {
                         resultContainer.innerHTML = `
-                            <div class="card shadow-md">
-                                <div class="p-6">
-                                    <h2 class="text-xl font-bold mb-6 pb-2 border-b border-gray-200 dark:border-gray-700">Student Details</h2>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                        <div>
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">ID Number</p>
-                                            <p class="font-semibold">${student.id_number}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">Name</p>
-                                            <p class="font-semibold">${student.name}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-500 dark:text-gray-400 text-sm">Sessions Left</p>
-                                            <p class="font-semibold">${student.sessions_left}</p>
-                                        </div>
-                                    </div>
-
-                                    <h3 class="text-lg font-bold mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">Log Sit-in Activity</h3>
-                                    <form method="post" action="search_student.php" class="space-y-4" onsubmit="return logSitInActivity()">
-                                        <input type="hidden" name="id_number" value="${student.id_number}">
-                                        <input type="hidden" name="name" value="${student.name}">
-                                        <input type="hidden" name="sessions_left" value="${student.sessions_left}">
-                                        
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div>
-                                                <label class="block text-gray-500 dark:text-gray-400 text-sm mb-2">Purpose</label>
-                                                <select name="purpose" required class="w-full p-3 border rounded-lg shadow-sm">
-                                                    <option value="C programming">C programming</option>
-                                                    <option value="Java programming">Java programming</option>
-                                                    <option value="C# programming">C# programming</option>
-                                                    <option value="PHP programming">PHP programming</option>
-                                                    <option value="ASP.NET programming">ASP.NET programming</option>
-                                                </select>
-                                            </div>
-                                            <div>
-                                                <label class="block text-gray-500 dark:text-gray-400 text-sm mb-2">Lab</label>
-                                                <select name="lab" required class="w-full p-3 border rounded-lg shadow-sm">
-                                                    <option value="524">524</option>
-                                                    <option value="526">526</option>
-                                                    <option value="528">528</option>
-                                                    <option value="530">530</option>
-                                                    <option value="MAC Laboratory">Mac Laboratory</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        
-                                        <div>
-                                            <label class="block text-gray-500 dark:text-gray-400 text-sm mb-2">PC Number (Optional)</label>
-                                            <input type="text" name="pc_number" placeholder="Enter PC number" class="w-full p-3 border rounded-lg shadow-sm">
-                                        </div>
-                                        
-                                        <div class="flex justify-end mt-6">
-                                            <button type="submit" name="handle_sit_in" class="btn-primary">
-                                                <i class="fas fa-sign-in-alt mr-2"></i>Start Sit-in Session
-                                            </button>
-                                        </div>
-                                    </form>
+                            <div class="bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 p-4 rounded-md">
+                                <div class="flex items-center">
+                                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                                    <span>No student found matching "${searchInput}". Please check the ID or name and try again.</span>
                                 </div>
                             </div>
                         `;
                     }
-                } else {
+                })
+                .catch(error => {
+                    console.error('Error:', error);
                     resultContainer.innerHTML = `
-                        <div class="bg-yellow-100 dark:bg-yellow-900/30 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-300 p-4 rounded-md">
+                        <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded-md">
                             <div class="flex items-center">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                <span>No student found matching "${searchInput}". Please check the ID or name and try again.</span>
+                                <i class="fas fa-times-circle mr-2"></i>
+                                <span>An error occurred while searching. Please try again later.</span>
                             </div>
                         </div>
                     `;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                resultContainer.innerHTML = `
-                    <div class="bg-red-100 dark:bg-red-900/30 border-l-4 border-red-500 text-red-700 dark:text-red-300 p-4 rounded-md">
-                        <div class="flex items-center">
-                            <i class="fas fa-times-circle mr-2"></i>
-                            <span>An error occurred while searching. Please try again later.</span>
-                        </div>
-                    </div>
-                `;
-            });
-    });
+                });
+        });
 
-    function logSitInActivity() {
-        // Show notification
-        const notification = document.createElement('div');
-        notification.className = 'fixed top-4 right-4 bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 rounded-md shadow-lg z-50 animate-fadeIn';
-        notification.innerHTML = `
-            <div class="flex items-center">
-                <i class="fas fa-check-circle mr-2"></i>
-                <span>Sit-in activity logged successfully!</span>
-            </div>
-        `;
-        document.body.appendChild(notification);
-        
-        // Remove notification after delay
-        setTimeout(() => {
-            notification.style.opacity = '0';
-            setTimeout(() => document.body.removeChild(notification), 500);
-        }, 3000);
-        
-        return true;
-    }
-</script>
-
+        function logSitInActivity() {
+            // Show notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-100 dark:bg-green-900/30 border-l-4 border-green-500 text-green-700 dark:text-green-300 p-4 rounded-md shadow-lg z-50 animate-fadeIn';
+            notification.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>Sit-in activity logged successfully!</span>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove notification after delay
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                setTimeout(() => document.body.removeChild(notification), 500);
+            }, 3000);
+            
+            return true;
+        }
+    </script>
 </body>
 </html>

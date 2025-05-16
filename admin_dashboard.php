@@ -152,566 +152,985 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Dark mode variables - matching student dashboard but with improved contrast */
         :root {
-            --bg-primary: #f0f9ff;
-            --bg-secondary: #dbeafe;
-            --text-primary: #111827;
-            --text-secondary: #374151;
-            --card-bg: #ffffff;
-            --card-header: #bfdbfe;
-            --nav-bg: #ffffff;
-            --nav-text: #111827;
-            --nav-hover-bg: #3b82f6;
-            --nav-hover-text: #ffffff;
-            --button-primary: #3b82f6;
-            --button-hover: #2563eb;
-            --button-text: #ffffff;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --chart-bg: #ffffff;
-            --chart-text: #111827;
-            --announcement-bg: #ffffff;
-            --announcement-text: #111827;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --border-color: #e5e7eb;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: #dbeafe;
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --card-bg: #fff;
+            --section-title-color: #94a3b8;
         }
 
         .dark {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #e5e7eb;
-            --card-bg: #1f2937;
-            --card-header: #2d3748;
-            --nav-bg: #111827;
-            --nav-text: #f9fafb;
-            --nav-hover-bg: #3b82f6;
-            --nav-hover-text: #ffffff;
-            --button-primary: #3b82f6;
-            --button-hover: #60a5fa;
-            --button-text: #f9fafb;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --chart-bg: #1f2937;
-            --chart-text: #f9fafb;
-            --announcement-bg: #1f2937;
-            --announcement-text: #f9fafb;
-            --accent-blue: #60a5fa;
-            --accent-green: #34d399;
-            --accent-yellow: #fbbf24;
-            --border-color: #374151;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-light: #1e3a8a;
+            --accent-hover: #60a5fa;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+            --card-bg: #1e293b;
+            --section-title-color: #64748b;
         }
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            line-height: 1.5;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
 
-        nav {
-            background-color: var(--nav-bg);
-            box-shadow: 0 2px 4px var(--shadow-color);
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
-        .nav-link {
-            color: var(--nav-text);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
+        .sidebar-header {
+            height: 70px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            font-weight: 500;
-        }
-
-        .nav-link:hover {
-            background-color: var(--nav-hover-bg);
-            color: var(--nav-hover-text);
-        }
-
-        .nav-link.active {
-            background-color: var(--button-primary);
-            color: var(--button-text);
-            font-weight: 600;
-        }
-
-        .card {
+            position: sticky;
+            top: 0;
             background-color: var(--card-bg);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-radius: 0.5rem;
+            z-index: 10;
+        }
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 12px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--section-title-color);
+            letter-spacing: 0.05em;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .nav-item.active {
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--accent-color);
+        }
+        
+        .user-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-info:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
             overflow: hidden;
-            border: 1px solid var(--border-color);
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px var(--shadow-color);
+        .main-content {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
-
-        .card-header {
-            background-color: var(--card-header);
-            padding: 1rem 1.5rem;
+        
+        .topbar {
+            height: 70px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .page-title {
             font-weight: 600;
-        }
-
-        .btn-primary {
-            background-color: var(--button-primary);
-            color: var(--button-text);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-            font-weight: 500;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--button-hover);
-        }
-        
-        /* Improved text styles for better readability */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
-        }
-        
-        p, li {
-            line-height: 1.6;
-        }
-        
-        /* Enhanced contrast for content */
-        .text-enhanced {
-            font-weight: 500;
-        }
-        
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-        
-        /* Better visibility for announcements */
-        .announcement-item {
-            background-color: var(--announcement-bg);
-            color: var(--announcement-text);
-            border-radius: 0.5rem;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            border-left: 4px solid var(--accent-blue);
-            box-shadow: 0 1px 3px var(--shadow-color);
-        }
-        
-        .announcement-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
+            font-size: 18px;
             color: var(--text-primary);
         }
         
-        .announcement-content {
-            font-size: 1rem;
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 240px;
+        }
+        
+        .search-input {
+            border: none;
+            background: none;
             color: var(--text-primary);
-            white-space: pre-wrap;
+            flex: 1;
+            outline: none;
+            font-size: 14px;
         }
         
-        /* Activity items with better visibility */
-        .activity-item {
-            background-color: var(--announcement-bg);
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 0.75rem;
-            border-left: 4px solid var(--accent-green);
-            box-shadow: 0 1px 3px var(--shadow-color);
+        .search-input::placeholder {
+            color: var(--text-secondary);
         }
         
-        /* Chart container improvements */
-        .chart-container {
-            background-color: var(--chart-bg);
-            padding: 1rem;
-            border-radius: 0 0 0.5rem 0.5rem;
-            height: 300px;
-        }
-
-        /* Custom animations */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .search-icon {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-right: 8px;
         }
         
-        .animate-fadeIn {
-            animation: fadeIn 0.5s ease-out forwards;
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
         }
         
-        /* Toggle switch styling */
-        .toggle-switch {
+        .switch {
             position: relative;
             display: inline-block;
-            width: 52px;
-            height: 26px;
+            width: 44px;
+            height: 22px;
         }
-
-        .toggle-switch input {
+        
+        .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-
-        .toggle-slider {
+        
+        .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: #ccc;
+            background-color: var(--bg-secondary);
             transition: .4s;
             border-radius: 34px;
         }
-
-        .toggle-slider:before {
+        
+        .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
-
-        input:checked + .toggle-slider {
-            background-color: #3b82f6;
-        }
-
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
-        }
-
-        /* Admin specific styles */
-        .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 0.5rem;
-            padding: 1.5rem;
-            box-shadow: 0 4px 6px var(--shadow-color);
-            transition: transform 0.3s;
+        
+        input:checked + .slider {
+            background-color: var(--accent-color);
         }
         
-        .stat-card:hover {
-            transform: translateY(-5px);
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        .content-area {
+            padding: 24px;
+            flex: 1;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        
+        .stat-title {
+            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .stat-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+        
+        .stat-icon.green {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .stat-icon.yellow {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .stat-description {
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .panels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+        
+        .panel-header {
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .panel-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .panel-title i {
+            color: var(--accent-color);
+        }
+        
+        .panel-content {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .announcement-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
         
         .announcement-item {
             background-color: var(--bg-secondary);
-            border-radius: 0.5rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            transition: all 0.2s;
+            border-radius: 8px;
+            padding: 16px;
+            border-left: 3px solid var(--accent-color);
         }
         
-        .announcement-item:hover {
-            box-shadow: 0 4px 6px var(--shadow-color);
+        .announcement-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: var (--text-primary);
+            margin-bottom: 8px;
+        }
+        
+        .announcement-content {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+        
+        .announcement-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var (--text-secondary);
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
         
         .activity-item {
-            border-left: 3px solid var(--button-primary);
-            padding-left: 1rem;
-            margin-bottom: 0.75rem;
+            display: flex;
+            gap: 16px;
+            padding: 12px;
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 500;
+            font-size: 14px;
+            color: var (--text-primary);
+            margin-bottom: 4px;
+        }
+        
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .activity-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .activity-tag.blue {
+            background-color: rgba(59, 130, 246, 0.1);
+            color: var(--accent-color);
+        }
+        
+        .activity-tag.purple {
+            background-color: rgba(139, 92, 246, 0.1);
+            color: #8b5cf6;
+        }
+        
+        .activity-time {
+            border-radius: 16px;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        .form-container {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        .form-control:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var (--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+        
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 100;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .panels-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .topbar {
+                padding: 0 16px;
+            }
+            
+            .menu-toggle {
+                display: block !important;
+            }
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <!-- Navigation Bar - Updated to match student dashboard -->
-    <nav class="sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                    <button type="button" id="mobile-menu-button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+<body>
+    <!-- Sidebar with categories -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-laptop-code"></i>
                 </div>
-                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center">
-                        <span class="text-xl font-bold hidden lg:block">Admin Portal</span>
-                    </div>
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space-x-4">
-                            <a href="admin_dashboard.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-home mr-2"></i> Dashboard
-                            </a>
-                            <a href="student_record.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-users mr-2"></i> Students
-                            </a>
-                            <a href="admin_reservation.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-calendar-check mr-2"></i> Reservations
-                            </a>
-                            <a href="sit_in_records.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
-                            </a>
-                            <a href="search_student.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-search mr-2"></i> Search
-                            </a>
-                            <a href="feedback.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-comments mr-2"></i> Feedback
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 space-x-3">
-                    <!-- Dark Mode Toggle -->
-                    <div class="flex items-center mr-4">
-                        <span class="mr-2 text-sm"><i class="fas fa-sun"></i></span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="darkModeToggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="ml-2 text-sm"><i class="fas fa-moon"></i></span>
-                    </div>
-                    
-                    <!-- Admin Logout -->
-                    <a href="admin_logout.php" 
-                       class="btn-primary flex items-center">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
-                    </a>
-                </div>
+                <div class="logo-text">SIT-IN Admin</div>
             </div>
-        </div>
-
-        <div class="sm:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="admin_dashboard.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-home mr-2"></i> Dashboard
-                </a>
-                <a href="student_record.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-users mr-2"></i> Students
-                </a>
-                <a href="admin_reservation.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-calendar-check mr-2"></i> Reservations
-                </a>
-                <a href="sit_in_records.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
-                </a>
-                <a href="search_student.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-search mr-2"></i> Search
-                </a>
-                <a href="feedback.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-comments mr-2"></i> Feedback
-                </a>
-            </div>
-        </div>
-    </nav>
-
-    <div class="container mx-auto p-6 flex-grow">
-        <!-- Statistics Cards - Improved visibility -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-fadeIn">
-            <div class="card shadow-lg">
-                <div class="card-header bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
-                    <h3 class="text-lg font-semibold flex items-center">
-                        <i class="fas fa-users mr-2 text-blue-500 dark:text-blue-400"></i>Total Students
-                    </h3>
-                </div>
-                <div class="p-6 text-center">
-                    <p class="stat-value text-blue-600 dark:text-blue-400"><?php echo count($students); ?></p>
-                </div>
-            </div>
-            
-            <div class="card shadow-lg">
-                <div class="card-header bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
-                    <h3 class="text-lg font-semibold flex items-center">
-                        <i class="fas fa-desktop mr-2 text-green-500 dark:text-green-400"></i>Active Sessions
-                    </h3>
-                </div>
-                <div class="p-6 text-center">
-                    <p class="stat-value text-green-600 dark:text-green-400"><?php echo $active_count; ?></p>
-                    <p class="text-sm text-gray-700 dark:text-gray-300 mt-2 font-medium">Current sit-in sessions today</p>
-                </div>
-            </div>
-            
-            <div class="card shadow-lg">
-                <div class="card-header bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
-                    <h3 class="text-lg font-semibold flex items-center">
-                        <i class="fas fa-bullhorn mr-2 text-yellow-500 dark:text-yellow-400"></i>Announcements
-                    </h3>
-                </div>
-                <div class="p-6 text-center">
-                    <p class="stat-value text-yellow-600 dark:text-yellow-400"><?php echo count($announcements); ?></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content Sections - Improved visibility -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <!-- Announcements Section -->
-            <section class="card shadow-lg">
-                <div class="card-header flex justify-between items-center">
-                    <h2 class="text-lg font-bold flex items-center">
-                        <i class="fas fa-bullhorn mr-2 text-blue-500 dark:text-blue-400"></i>Announcements
-                    </h2>
-                    <button class="btn-primary font-medium" onclick="showAnnouncementForm()">
-                        <i class="fas fa-plus mr-2"></i>New
-                    </button>
-                </div>
-
-                <div class="p-6">
-                    <!-- Announcement Form - Improved visibility -->
-                    <form method="post" action="admin_dashboard.php" class="hidden space-y-4 mb-6 bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800" id="announcementForm">
-                        <div>
-                            <label for="title" class="block text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Title</label>
-                            <input type="text" id="title" name="title" required class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base" placeholder="Announcement title...">
-                        </div>
-                        <div>
-                            <label for="content" class="block text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Content</label>
-                            <textarea id="content" name="content" required rows="4" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base" placeholder="Write your announcement here..."></textarea>
-                        </div>
-                        <div class="flex justify-end space-x-3">
-                            <button type="button" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors font-medium text-gray-800 dark:text-white" onclick="showAnnouncementForm()">Cancel</button>
-                            <button type="submit" name="create_announcement" class="btn-primary font-medium">
-                                <i class="fas fa-paper-plane mr-2"></i>Post
-                            </button>
-                        </div>
-                    </form>
-
-                    <!-- Announcements List - Improved visibility -->
-                    <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                        <?php if (empty($announcements)): ?>
-                            <div class="text-center py-10">
-                                <i class="far fa-bell-slash text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
-                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No announcements yet</p>
-                                <p class="text-base text-gray-600 dark:text-gray-400">Create your first announcement</p>
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($announcements as $announcement): ?>
-                                <div class="announcement-item">
-                                    <div class="mb-3">
-                                        <h4 class="announcement-title"><?php echo isset($announcement['title']) ? htmlspecialchars($announcement['title']) : 'Announcement'; ?></h4>
-                                        <p class="announcement-content"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></p>
-                                    </div>
-                                    <div class="flex justify-between items-center text-sm mt-4 pt-2 border-t border-gray-200 dark:border-gray-700">
-                                        <span class="font-medium text-gray-600 dark:text-gray-300"><?php echo date('F j, Y', strtotime($announcement['created_at'])); ?></span>
-                                        <div class="space-x-3">
-                                            <button class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors font-medium" onclick="editAnnouncement(<?php echo $announcement['id']; ?>, '<?php echo htmlspecialchars(addslashes($announcement['content'])); ?>')">
-                                                <i class="fas fa-edit mr-1"></i>Edit
-                                            </button>
-                                            <form method="post" action="admin_dashboard.php" class="inline">
-                                                <input type="hidden" name="id" value="<?php echo $announcement['id']; ?>">
-                                                <button type="submit" name="delete_announcement" class="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded hover:bg-red-200 dark:hover:bg-red-800 transition-colors font-medium">
-                                                    <i class="fas fa-trash mr-1"></i>Delete
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Recent Activities Section - Improved visibility -->
-            <section class="card shadow-lg">
-                <div class="card-header">
-                    <h2 class="text-lg font-bold flex items-center">
-                        <i class="fas fa-clipboard-check mr-2 text-green-500 dark:text-green-400"></i>Recent Activities
-                    </h2>
-                </div>
-                <div class="p-6">
-                    <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                        <?php if (empty($sit_in_records)): ?>
-                            <div class="text-center py-10">
-                                <i class="fas fa-clipboard text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
-                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No active sessions today</p>
-                                <p class="text-base text-gray-600 dark:text-gray-400">Active sessions will appear here</p>
-                            </div>
-                        <?php else: ?>
-                            <?php foreach ($sit_in_records as $record): ?>
-                                <div class="activity-item">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <h4 class="font-semibold text-base text-gray-900 dark:text-gray-100"><?php echo htmlspecialchars($record['name']); ?></h4>
-                                            <div class="flex flex-wrap gap-4 mt-2">
-                                                <div class="text-sm bg-blue-50 dark:bg-blue-900/20 px-2 py-1 rounded-md">
-                                                    <span class="font-medium text-blue-700 dark:text-blue-300">Lab:</span>
-                                                    <span class="font-semibold text-gray-900 dark:text-white"><?php echo htmlspecialchars($record['lab_number']); ?></span>
-                                                </div>
-                                                <div class="text-sm bg-purple-50 dark:bg-purple-900/20 px-2 py-1 rounded-md">
-                                                    <span class="font-medium text-purple-700 dark:text-purple-300">Purpose:</span>
-                                                    <span class="font-semibold text-gray-900 dark:text-white"><?php echo htmlspecialchars($record['sit_in_purpose']); ?></span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <span class="text-sm bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 px-3 py-1 rounded-full font-medium">
-                                            <?php echo date('g:i A', strtotime($record['login_time'])); ?>
-                                        </span>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </section>
         </div>
         
-        <!-- Charts section - Improved visibility -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div class="card shadow-lg">
-                <div class="card-header bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200">
-                    <h3 class="text-lg font-semibold flex items-center">
-                        <i class="fas fa-chart-pie mr-2 text-indigo-500 dark:text-indigo-400"></i>Language Distribution
-                    </h3>
-                </div>
-                <div class="chart-container">
-                    <canvas id="languagePieChart"></canvas>
-                </div>
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <a href="admin_dashboard.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <span>Dashboard</span>
+                </a>
             </div>
-            <div class="card shadow-lg">
-                <div class="card-header bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">
-                    <h3 class="text-lg font-semibold flex items-center">
-                        <i class="fas fa-chart-bar mr-2 text-purple-500 dark:text-purple-400"></i>Laboratory Usage
-                    </h3>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Management</div>
+                <a href="student_record.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-user-graduate"></i></div>
+                    <span>Students</span>
+                </a>
+                <a href="admin_reservation.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <span>Reservations</span>
+                </a>
+                <a href="sit_in_records.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <span>Sit-in Records</span>
+                </a>
+                <a href="search_student.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-search"></i></div>
+                    <span>Search</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Features</div>
+                <a href="schedule.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
+                    <span>Schedules</span>
+                </a>
+                <a href="feedback.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-comments"></i></div>
+                    <span>Feedback</span>
+                </a>
+                <a href="resources.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-cube"></i></div>
+                    <span>Resources</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">System Administrator</div>
                 </div>
-                <div class="chart-container">
-                    <canvas id="laboratoryBarChart"></canvas>
+                <div>
+                    <a href="admin_logout.php" title="Logout">
+                        <i class="fas fa-sign-out-alt text-gray-400 hover:text-red-500"></i>
+                    </a>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Footer - Improved visibility -->
-    <footer class="mt-auto py-4 border-t border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50">
-        <div class="container mx-auto px-4">
-            <div class="text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                <p>&copy; <?php echo date('Y'); ?> Admin Portal. All rights reserved.</p>
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Main content area -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="flex items-center">
+                <button class="menu-toggle mr-4" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Dashboard</h1>
+            </div>
+            
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" placeholder="Search" class="search-input">
+                </div>
+                
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
             </div>
         </div>
-    </footer>
+        
+        <div class="content-area">
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">TOTAL STUDENTS</div>
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value"><?php echo count($students); ?></div>
+                    <div class="stat-description">Registered students in the system</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">ACTIVE SESSIONS</div>
+                        <div class="stat-icon green">
+                            <i class="fas fa-desktop"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value"><?php echo $active_count; ?></div>
+                    <div class="stat-description">Current sit-in sessions today</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-title">ANNOUNCEMENTS</div>
+                        <div class="stat-icon yellow">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                    </div>
+                    <div class="stat-value"><?php echo count($announcements); ?></div>
+                    <div class="stat-description">Published announcements</div>
+                </div>
+            </div>
+            
+            <!-- Content Panels -->
+            <div class="panels-grid">
+                <!-- Announcements Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-bullhorn"></i>
+                            <span>Announcements</span>
+                        </h2>
+                        <button class="btn btn-primary" onclick="showAnnouncementForm()">
+                            <i class="fas fa-plus"></i>
+                            <span>New</span>
+                        </button>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <!-- Announcement Form -->
+                        <div class="form-container hidden" id="announcementForm">
+                            <form method="post" action="admin_dashboard.php">
+                                <div class="form-group">
+                                    <label class="form-label" for="title">Title</label>
+                                    <input type="text" id="title" name="title" class="form-control" placeholder="Enter title" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label class="form-label" for="content">Content</label>
+                                    <textarea id="content" name="content" class="form-control" rows="4" placeholder="Enter announcement content" required></textarea>
+                                </div>
+                                
+                                <div class="form-actions">
+                                    <button type="button" class="btn btn-outline" onclick="showAnnouncementForm()">
+                                        Cancel
+                                    </button>
+                                    <button type="submit" name="create_announcement" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane"></i>
+                                        <span>Post</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Announcements List -->
+                        <div class="announcement-list">
+                            <?php if (empty($announcements)): ?>
+                                <div class="text-center py-10">
+                                    <i class="far fa-bell-slash text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
+                                    <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No announcements yet</p>
+                                    <p class="text-base text-gray-600 dark:text-gray-400">Create your first announcement</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($announcements as $announcement): ?>
+                                    <div class="announcement-item">
+                                        <h3 class="announcement-title"><?php echo isset($announcement['title']) ? htmlspecialchars($announcement['title']) : 'Announcement'; ?></h3>
+                                        <div class="announcement-content"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></div>
+                                        <div class="announcement-footer">
+                                            <span><?php echo date('F j, Y', strtotime($announcement['created_at'])); ?></span>
+                                            <div class="button-group">
+                                                <button class="btn btn-sm btn-outline" onclick="editAnnouncement(<?php echo $announcement['id']; ?>, '<?php echo htmlspecialchars(addslashes($announcement['content'])); ?>')">
+                                                    <i class="fas fa-edit"></i> Edit
+                                                </button>
+                                                <form method="post" action="admin_dashboard.php" class="inline">
+                                                    <input type="hidden" name="id" value="<?php echo $announcement['id']; ?>">
+                                                    <button type="submit" name="delete_announcement" class="btn btn-sm btn-danger">
+                                                        <i class="fas fa-trash"></i> Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activities Panel -->
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-clipboard-check"></i>
+                            <span>Recent Activities</span>
+                        </h2>
+                    </div>
+                    
+                    <div class="panel-content">
+                        <div class="activity-list">
+                            <?php if (empty($sit_in_records)): ?>
+                                <div class="text-center py-10">
+                                    <i class="fas fa-clipboard text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
+                                    <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No active sessions today</p>
+                                    <p class="text-base text-gray-600 dark:text-gray-400">Active sessions will appear here</p>
+                                </div>
+                            <?php else: ?>
+                                <?php foreach ($sit_in_records as $record): ?>
+                                    <div class="activity-item">
+                                        <div class="activity-content">
+                                            <h3 class="activity-title"><?php echo htmlspecialchars($record['name']); ?></h3>
+                                            <div class="activity-meta">
+                                                <div class="activity-tag blue">
+                                                    <i class="fas fa-laptop"></i>
+                                                    <span>Lab <?php echo htmlspecialchars($record['lab_number']); ?></span>
+                                                </div>
+                                                <div class="activity-tag purple">
+                                                    <i class="fas fa-code"></i>
+                                                    <span><?php echo htmlspecialchars($record['sit_in_purpose']); ?></span>
+                                                </div>
+                                                <div class="activity-time">
+                                                    <?php echo date('g:i A', strtotime($record['login_time'])); ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Charts Section -->
+            <div class="panels-grid">
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-chart-pie"></i>
+                            <span>Language Distribution</span>
+                        </h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="languagePieChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Laboratory Usage</span>
+                        </h2>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="laboratoryBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Add Chart.js before the existing script tag -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
         });
         
-        // Dark mode toggle functionality
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.style.display = 'none';
+        });
+        
+        // Announcement form toggle
+        function showAnnouncementForm() {
+            const form = document.getElementById('announcementForm');
+            form.classList.toggle('hidden');
+        }
+        
+        // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const html = document.documentElement;
         
@@ -724,7 +1143,6 @@ $conn->close();
             darkModeToggle.checked = true;
         }
         
-        // Toggle theme when button is clicked
         darkModeToggle.addEventListener('change', function() {
             if (this.checked) {
                 html.classList.add('dark');
@@ -734,50 +1152,17 @@ $conn->close();
                 localStorage.setItem('theme', 'light');
             }
             
-            // Force chart update on theme change
             updateChartsTheme();
         });
         
-        function showAnnouncementForm() {
-            const form = document.getElementById('announcementForm');
-            form.classList.toggle('hidden');
-        }
-        
-        function updateChartsTheme() {
-            // Get current theme
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            
-            // Update chart theme colors
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
-            const textColor = isDarkMode ? '#e5e7eb' : '#111827';
-            const fontSize = 14;
-            
-            // Update and re-render charts
-            if (window.laboratoryChart) {
-                window.laboratoryChart.options.scales.x.grid.color = gridColor;
-                window.laboratoryChart.options.scales.y.grid.color = gridColor;
-                window.laboratoryChart.options.scales.x.ticks.color = textColor;
-                window.laboratoryChart.options.scales.y.ticks.color = textColor;
-                window.laboratoryChart.options.scales.x.ticks.font = { size: fontSize, weight: 'bold' };
-                window.laboratoryChart.options.scales.y.ticks.font = { size: fontSize, weight: 'bold' };
-                window.laboratoryChart.update();
-            }
-            
-            if (window.languageChart) {
-                window.languageChart.options.plugins.legend.labels.color = textColor;
-                window.languageChart.options.plugins.legend.labels.font = { size: fontSize, weight: 'bold' };
-                window.languageChart.update();
-            }
-        }
-        
-        // Edit announcement with improved modal for better visibility
+        // Edit announcement functionality
         function editAnnouncement(id, content) {
             // Create modal backdrop
             const backdrop = document.createElement('div');
             backdrop.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
             backdrop.id = 'editModal';
             
-            // Create modal content with better visibility
+            // Create modal content
             const modal = document.createElement('div');
             modal.className = 'bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4 shadow-xl border border-gray-200 dark:border-gray-700';
             modal.innerHTML = `
@@ -806,14 +1191,12 @@ $conn->close();
             backdrop.appendChild(modal);
             document.body.appendChild(backdrop);
             
-            // Add event listener to close when clicking outside
             backdrop.addEventListener('click', function(e) {
                 if (e.target === backdrop) {
                     closeEditModal();
                 }
             });
             
-            // Focus on the textarea
             setTimeout(() => {
                 document.getElementById('editContent').focus();
             }, 100);
@@ -826,6 +1209,34 @@ $conn->close();
             }
         }
 
+        function updateChartsTheme() {
+            // Get current theme
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            
+            // Update chart theme colors
+            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
+            const textColor = isDarkMode ? '#e5e7eb' : '#111827';
+            const fontSize = 14;
+            
+            // Update and re-render charts
+            if (window.laboratoryChart) {
+                window.laboratoryChart.options.scales.x.grid.color = gridColor;
+                window.laboratoryChart.options.scales.y.grid.color = gridColor;
+                window.laboratoryChart.options.scales.x.ticks.color = textColor;
+                window.laboratoryChart.options.scales.y.ticks.color = textColor;
+                window.laboratoryChart.options.scales.x.ticks.font = { size: fontSize, weight: 'bold' };
+                window.laboratoryChart.options.scales.y.ticks.font = { size: fontSize, weight: 'bold' };
+                window.laboratoryChart.update();
+            }
+            
+            if (window.languageChart) {
+                window.languageChart.options.plugins.legend.labels.color = textColor;
+                window.languageChart.options.plugins.legend.labels.font = { size: fontSize, weight: 'bold' };
+                window.languageChart.update();
+            }
+        }
+        
+        // Chart initialization
         document.addEventListener('DOMContentLoaded', function() {
             const laboratoryStats = <?php echo $lab_data; ?>;
             const languageStats = <?php echo $language_data; ?>;

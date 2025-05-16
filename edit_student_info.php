@@ -156,337 +156,611 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en" class="light">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Student Profile</title>
+    <title>Edit Profile</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
     <style>
-        /* Color variables for light/dark mode */
         :root {
-            --bg-primary: #f9fafb;
-            --bg-secondary: #f3f4f6;
-            --text-primary: #111827;
-            --text-secondary: #4b5563;
-            --accent-color: #2563eb;
-            --accent-hover: #1d4ed8;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
             --accent-light: #dbeafe;
-            --card-bg: #ffffff;
-            --card-border: #e5e7eb;
-            --nav-bg: #ffffff;
-            --nav-border: #e5e7eb;
-            --button-bg: #2563eb;
-            --button-hover: #1d4ed8;
-            --button-text: #ffffff;
-            --input-border: #d1d5db;
-            --input-bg: #ffffff;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --red: #ef4444;
-            --green: #10b981;
-            --yellow: #f59e0b;
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --card-bg: #fff;
+            --section-title-color: #94a3b8;
         }
 
         .dark {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --accent-color: #3b82f6;
-            --accent-hover: #60a5fa;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
             --accent-light: #1e3a8a;
-            --card-bg: #1f2937;
-            --card-border: #374151;
-            --nav-bg: #111827;
-            --nav-border: #374151;
-            --button-bg: #3b82f6;
-            --button-hover: #60a5fa;
-            --button-text: #ffffff;
-            --input-border: #4b5563;
-            --input-bg: #374151;
-            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-            --red: #f87171;
-            --green: #34d399;
-            --yellow: #fbbf24;
+            --accent-hover: #60a5fa;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+            --card-bg: #1e293b;
+            --section-title-color: #64748b;
         }
-        
+
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
-        
-        /* Simple card design */
-        .card {
+
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
             background-color: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 0.5rem;
-            box-shadow: var(--shadow);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
             transition: all 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .sidebar-header {
+            height: 70px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            z-index: 10;
         }
         
-        .card:hover {
-            box-shadow: var(--shadow-md);
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
         
-        /* Clean navigation */
-        nav {
-            background-color: var(--nav-bg);
-            border-bottom: 1px solid var(--nav-border);
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
         }
         
-        .nav-link {
-            color: var(--text-secondary);
-            padding: 0.75rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
         }
         
-        .nav-link:hover {
-            color: var(--accent-color);
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 12px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            text-transform: uppercase;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--section-title-color);
+            letter-spacing: 0.05em;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
             background-color: var(--bg-secondary);
         }
         
-        .nav-link.active {
-            color: var(--accent-color);
-            font-weight: 600;
-        }
-        
-        /* Button styles */
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s;
-            font-weight: 500;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-primary {
-            background-color: var(--button-bg);
-            color: var(--button-text);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--button-hover);
-        }
-        
-        .btn-outline {
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
-            background-color: transparent;
-        }
-        
-        .btn-outline:hover {
+        .nav-item.active {
             background-color: var(--accent-light);
             color: var(--accent-color);
         }
         
-        /* Toggle switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 26px;
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--text-secondary);
         }
         
-        .toggle-switch input {
+        .nav-item.active .nav-icon {
+            color: var(--accent-color);
+        }
+        
+        .user-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-info:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .main-content {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .topbar {
+            height: 70px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        
+        .switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
         
-        .toggle-slider {
+        .slider {
             position: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background-color: var(--input-border);
+            background-color: var(--bg-secondary);
             transition: .4s;
             border-radius: 34px;
         }
         
-        .toggle-slider:before {
+        .slider:before {
             position: absolute;
             content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
             background-color: white;
             transition: .4s;
             border-radius: 50%;
         }
         
-        input:checked + .toggle-slider {
+        input:checked + .slider {
             background-color: var(--accent-color);
         }
         
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
+        input:checked + .slider:before {
+            transform: translateX(22px);
         }
         
-        /* Form input styles */
-        input, select, textarea {
-            background-color: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-primary);
-            border-radius: 0.375rem;
-            padding: 0.5rem 0.75rem;
-            width: 100%;
-            transition: all 0.2s;
+        .content-area {
+            padding: 24px;
+            flex: 1;
         }
         
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
         }
         
-        /* Section header */
-        .section-header {
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            margin-bottom: 1rem;
+            justify-content: space-between;
         }
         
-        .section-header h2 {
-            font-size: 1.25rem;
+        .card-title {
             font-weight: 600;
-            margin: 0;
+            font-size: 16px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
-        .section-header .icon {
-            margin-right: 0.5rem;
+        .card-title i {
             color: var(--accent-color);
         }
         
-        /* Simple fade in animation */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
         }
         
-        .fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
         }
         
-        /* Image upload area */
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--card-bg);
+            color: var(--text-primary);
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        
+        .modal {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            max-width: 500px;
+            width: 100%;
+            margin: 20px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 100;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .topbar {
+                padding: 0 16px;
+            }
+            
+            .menu-toggle {
+                display: block !important;
+            }
+        }
+        
+        /* Upload area styling */
         .upload-area {
-            border: 2px dashed var(--input-border);
-            border-radius: 1rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
             transition: all 0.3s;
-            position: relative;
-            overflow: hidden;
+            cursor: pointer;
         }
         
         .upload-area:hover {
             border-color: var(--accent-color);
-            background-color: rgba(37, 99, 235, 0.05);
+            background-color: var(--bg-secondary);
         }
         
         .upload-area.dragover {
             border-color: var(--accent-color);
-            background-color: rgba(37, 99, 235, 0.1);
+            background-color: rgba(59, 130, 246, 0.1);
         }
         
-        /* Modal styling */
-        .modal {
-            transition: all 0.3s ease-out;
+        .profile-img-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto;
         }
         
-        .modal-content {
-            max-height: 90vh;
-            overflow-y: auto;
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--accent-color);
+        }
+        
+        .edit-overlay {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background-color: var(--accent-color);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
-<body class="min-h-screen flex flex-col">
-    <!-- Simple Navigation Bar -->
-    <nav class="sticky top-0 z-50 px-4 py-2">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center">
-                <span class="text-lg font-semibold hidden md:block">Student Portal</span>
-                <div class="hidden md:flex items-center ml-8 space-x-1">
-                    <a href="dashboard.php" class="nav-link">
-                        <i class="fas fa-home mr-2"></i> Home
-                    </a>
-                    <a href="edit_student_info.php" class="nav-link active">
-                        <i class="fas fa-user mr-2"></i> Profile
-                    </a>
-                    <a href="history.php" class="nav-link">
-                        <i class="fas fa-history mr-2"></i> History
-                    </a>
-                    <a href="reservation.php" class="nav-link">
-                        <i class="fas fa-calendar mr-2"></i> Reservation
-                    </a>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-laptop-code"></i>
                 </div>
-            </div>
-            
-            <div class="flex items-center space-x-4">
-                <!-- Dark Mode Toggle -->
-                <div class="flex items-center">
-                    <span class="mr-2 text-sm"><i class="fas fa-sun"></i></span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="darkModeToggle">
-                        <span class="toggle-slider"></span>
-                    </label>
-                    <span class="ml-2 text-sm"><i class="fas fa-moon"></i></span>
-                </div>
-                
-                <!-- Logout Button -->
-                <a href="logout.php" class="btn btn-primary bg-red-500 hover:bg-red-600 hidden md:flex">
-                    <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                </a>
-                
-                <!-- Mobile menu button -->
-                <button id="mobile-menu-button" class="md:hidden p-2 rounded-md focus:outline-none">
-                    <i class="fas fa-bars"></i>
-                </button>
+                <div class="logo-text">SIT-IN Portal</div>
             </div>
         </div>
         
-        <!-- Mobile menu -->
-        <div id="mobile-menu" class="md:hidden hidden mt-2 pb-2">
-            <a href="dashboard.php" class="nav-link block mb-1">
-                <i class="fas fa-home mr-2"></i> Home
-            </a>
-            <a href="edit_student_info.php" class="nav-link block mb-1 active">
-                <i class="fas fa-user mr-2"></i> Profile
-            </a>
-            <a href="history.php" class="nav-link block mb-1">
-                <i class="fas fa-history mr-2"></i> History
-            </a>
-            <a href="reservation.php" class="nav-link block mb-1">
-                <i class="fas fa-calendar mr-2"></i> Reservation
-            </a>
-            <!-- Logout Button in mobile menu -->
-            <a href="logout.php" class="nav-link block mb-1 text-red-600 dark:text-red-400">
-                <i class="fas fa-sign-out-alt mr-2"></i> Logout
-            </a>
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <a href="dashboard.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-home"></i></div>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Account</div>
+                <a href="edit_student_info.php" class="nav-item active">
+                    <div class="nav-icon"><i class="fas fa-user"></i></div>
+                    <span>Profile</span>
+                </a>
+                <a href="history.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-history"></i></div>
+                    <span>Session History</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Actions</div>
+                <a href="reservation.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar"></i></div>
+                    <span>Make a Reservation</span>
+                </a>
+                <a href="view_schedule.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
+                    <span>View Schedules</span>
+                </a>
+                <a href="view_resources.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-cube"></i></div>
+                    <span>Browse Resources</span>
+                </a>
+            </div>
         </div>
-    </nav>
-
-    <div class="container mx-auto px-4 py-6 flex-grow">
-        <div class="mb-6 fade-in">
-            <h1 class="text-2xl font-bold">Edit Profile</h1>
-            <p class="text-sm text-gray-600 dark:text-gray-400">Update your personal information</p>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar"><?php echo substr($first_name, 0, 1); ?></div>
+                <div class="user-details">
+                    <div class="user-name"><?php echo $first_name . ' ' . $last_name; ?></div>
+                    <div class="user-role"><?php echo $course . ' - ' . $course_level; ?></div>
+                </div>
+                <div>
+                    <a href="logout.php" title="Logout">
+                        <i class="fas fa-sign-out-alt text-gray-400 hover:text-red-500"></i>
+                    </a>
+                </div>
+            </div>
         </div>
-
-        <div class="max-w-4xl mx-auto">
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Main content -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="flex items-center">
+                <button class="menu-toggle mr-4" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Edit Profile</h1>
+            </div>
+            
+            <div class="topbar-actions">
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-area">
+            <!-- Status Messages -->
             <?php if (isset($_SESSION["update_success"]) && $_SESSION["update_success"]): ?>
-            <div id="success-message" class="mb-6 p-4 border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-md fade-in">
+            <div id="success-message" class="mb-6 p-4 border-l-4 border-green-500 bg-green-50 dark:bg-green-900/20 rounded-md">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <i class="fas fa-check-circle text-green-500 text-lg"></i>
@@ -513,7 +787,7 @@ $conn->close();
             <?php endif; ?>
             
             <?php if (isset($_SESSION["update_error"])): ?>
-            <div id="error-message" class="mb-6 p-4 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-md fade-in">
+            <div id="error-message" class="mb-6 p-4 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 rounded-md">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
                         <i class="fas fa-exclamation-circle text-red-500 text-lg"></i>
@@ -530,267 +804,237 @@ $conn->close();
             </div>
             <?php unset($_SESSION["update_error"]); ?>
             <?php endif; ?>
-                
+            
+            <!-- Profile Overview Card -->
             <div class="card mb-6">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user"></i>
+                        <span>Profile Overview</span>
+                    </h2>
+                </div>
+                
                 <div class="p-6">
-                    <div class="flex justify-center mb-6">
-                        <div class="relative group cursor-pointer" onclick="toggleEditProfile()">
-                            <img src="<?php echo $profile_image; ?>?v=<?php echo time(); ?>" alt="Profile Image" 
-                                class="w-32 h-32 rounded-full object-cover border-2 border-blue-500 transition-all duration-300 group-hover:opacity-80">
-                            <div class="absolute bottom-0 right-0 bg-blue-500 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                    <div class="flex flex-col items-center">
+                        <div class="profile-img-container mb-4" onclick="toggleProfileModal()">
+                            <img src="<?php echo $profile_image; ?>?v=<?php echo time(); ?>" alt="Profile" class="profile-img">
+                            <div class="edit-overlay">
                                 <i class="fas fa-camera"></i>
                             </div>
-                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                <span class="bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-xs">Change Photo</span>
+                        </div>
+                        
+                        <div class="text-center mb-4">
+                            <h3 class="text-xl font-semibold"><?php echo $first_name . ' ' . $last_name; ?></h3>
+                            <p class="text-sm text-gray-600 dark:text-gray-400"><?php echo $id_number; ?></p>
+                            <div class="mt-2">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-300">
+                                    <?php echo $course . ' - ' . $course_level; ?>
+                                </span>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="text-center mb-4">
-                        <h3 class="text-lg font-semibold"><?php echo $first_name . ' ' . $last_name; ?></h3>
-                        <p class="text-sm text-gray-600 dark:text-gray-400"><?php echo $id_number; ?></p>
                     </div>
                 </div>
             </div>
-                    
-            <form method="post" action="edit_student_info.php" class="space-y-6">
-                <div class="card p-6 mb-6">
-                    <div class="section-header mb-4">
-                        <i class="fas fa-user-circle icon"></i>
-                        <h2>Personal Information</h2>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="last_name" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Last Name
-                            </label>
-                            <input type="text" id="last_name" name="last_name" required 
-                                value="<?php echo htmlspecialchars($last_name); ?>">
-                        </div>
-                        <div>
-                            <label for="first_name" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                First Name
-                            </label>
-                            <input type="text" id="first_name" name="first_name" required 
-                                value="<?php echo htmlspecialchars($first_name); ?>">
-                        </div>
-                        <div>
-                            <label for="middle_name" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Middle Name
-                            </label>
-                            <input type="text" id="middle_name" name="middle_name" 
-                                value="<?php echo htmlspecialchars($middle_name); ?>">
-                        </div>
-                        <div>
-                            <label for="email" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Email Address
-                            </label>
-                            <input type="email" id="email" name="email" required 
-                                value="<?php echo htmlspecialchars($email); ?>">
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card p-6 mb-6">
-                    <div class="section-header mb-4">
-                        <i class="fas fa-graduation-cap icon"></i>
-                        <h2>Academic Information</h2>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="course" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Course
-                            </label>
-                            <select id="course" name="course" required>
-                                <option value="BSCS" <?php if ($course == 'BSCS') echo 'selected'; ?>>Bachelor of Science in Computer Science</option>
-                                <option value="BSIT" <?php if ($course == 'BSIT') echo 'selected'; ?>>Bachelor of Science in Information Technology</option>
-                                <option value="BSSE" <?php if ($course == 'BSSE') echo 'selected'; ?>>Bachelor of Science in Software Engineering</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label for="course_level" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Year Level
-                            </label>
-                            <select id="course_level" name="course_level" required>
-                                <option value="1st Year" <?php if ($course_level == '1st Year') echo 'selected'; ?>>1st Year</option>
-                                <option value="2nd Year" <?php if ($course_level == '2nd Year') echo 'selected'; ?>>2nd Year</option>
-                                <option value="3rd Year" <?php if ($course_level == '3rd Year') echo 'selected'; ?>>3rd Year</option>
-                                <option value="4th Year" <?php if ($course_level == '4th Year') echo 'selected'; ?>>4th Year</option>
-                                <option value="5th Year" <?php if ($course_level == '5th Year') echo 'selected'; ?>>5th Year</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="card p-6 mb-6">
-                    <div class="section-header mb-4">
-                        <i class="fas fa-map-marker-alt icon"></i>
-                        <h2>Contact Information</h2>
-                    </div>
-                    
-                    <div>
-                        <label for="address" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            Complete Address
-                        </label>
-                        <textarea id="address" name="address" required rows="3"><?php echo htmlspecialchars($address); ?></textarea>
-                    </div>
-                </div>
-                
-                <div class="flex justify-between">
-                    <a href="dashboard.php" class="btn btn-outline">
-                        <i class="fas fa-arrow-left mr-2"></i>
-                        Cancel
-                    </a>
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save mr-2"></i>
-                        Save Changes
-                    </button>
-                </div>
-            </form>
             
-            <!-- New Password Reset Section -->
-            <div class="card p-6 mb-6">
-                <div class="section-header mb-4">
-                    <i class="fas fa-lock icon"></i>
-                    <h2>Change Password</h2>
+            <!-- Personal Information Form -->
+            <div class="card mb-6">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Personal Information</span>
+                    </h2>
                 </div>
                 
-                <form method="post" action="edit_student_info.php" id="password-form" class="space-y-4">
-                    <div>
-                        <label for="current_password" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                            Current Password
-                        </label>
-                        <input type="password" id="current_password" name="current_password" required 
-                            class="w-full">
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="new_password" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                New Password
-                            </label>
-                            <input type="password" id="new_password" name="new_password" required 
-                                class="w-full" minlength="8">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                Minimum 8 characters
-                            </p>
+                <div class="p-6">
+                    <form method="post" action="edit_student_info.php">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group">
+                                <label for="last_name" class="form-label">Last Name</label>
+                                <input type="text" id="last_name" name="last_name" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($last_name); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="first_name" class="form-label">First Name</label>
+                                <input type="text" id="first_name" name="first_name" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($first_name); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="middle_name" class="form-label">Middle Name</label>
+                                <input type="text" id="middle_name" name="middle_name" class="form-control" 
+                                    value="<?php echo htmlspecialchars($middle_name); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" id="email" name="email" class="form-control" required 
+                                    value="<?php echo htmlspecialchars($email); ?>">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="course" class="form-label">Course</label>
+                                <select id="course" name="course" class="form-control" required>
+                                    <option value="BSCS" <?php if ($course == 'BSCS') echo 'selected'; ?>>Bachelor of Science in Computer Science</option>
+                                    <option value="BSIT" <?php if ($course == 'BSIT') echo 'selected'; ?>>Bachelor of Science in Information Technology</option>
+                                    <option value="BSSE" <?php if ($course == 'BSSE') echo 'selected'; ?>>Bachelor of Science in Software Engineering</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="course_level" class="form-label">Year Level</label>
+                                <select id="course_level" name="course_level" class="form-control" required>
+                                    <option value="1st Year" <?php if ($course_level == '1st Year') echo 'selected'; ?>>1st Year</option>
+                                    <option value="2nd Year" <?php if ($course_level == '2nd Year') echo 'selected'; ?>>2nd Year</option>
+                                    <option value="3rd Year" <?php if ($course_level == '3rd Year') echo 'selected'; ?>>3rd Year</option>
+                                    <option value="4th Year" <?php if ($course_level == '4th Year') echo 'selected'; ?>>4th Year</option>
+                                    <option value="5th Year" <?php if ($course_level == '5th Year') echo 'selected'; ?>>5th Year</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group col-span-1 md:col-span-2">
+                                <label for="address" class="form-label">Complete Address</label>
+                                <textarea id="address" name="address" class="form-control" required rows="3"><?php echo htmlspecialchars($address); ?></textarea>
+                            </div>
                         </div>
                         
-                        <div>
-                            <label for="confirm_password" class="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                Confirm New Password
-                            </label>
-                            <input type="password" id="confirm_password" name="confirm_password" required 
-                                class="w-full">
+                        <div class="flex justify-end mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save mr-2"></i>
+                                Save Changes
+                            </button>
                         </div>
-                    </div>
-                    
-                    <div class="pt-2">
-                        <div class="flex items-center" id="password-validation">
-                            <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
-                            <span class="text-xs text-gray-600 dark:text-gray-400">Password requirements will be checked when you submit</span>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Password Change Card -->
+            <div class="card mb-6">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-lock"></i>
+                        <span>Change Password</span>
+                    </h2>
+                </div>
+                
+                <div class="p-6">
+                    <form method="post" action="edit_student_info.php" id="password-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-group col-span-1 md:col-span-2">
+                                <label for="current_password" class="form-label">Current Password</label>
+                                <input type="password" id="current_password" name="current_password" class="form-control" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="new_password" class="form-label">New Password</label>
+                                <input type="password" id="new_password" name="new_password" class="form-control" required minlength="8">
+                                <p class="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirm_password" class="form-label">Confirm New Password</label>
+                                <input type="password" id="confirm_password" name="confirm_password" class="form-control" required>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex justify-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-key mr-2"></i>
-                            Update Password
-                        </button>
-                    </div>
-                </form>
+                        
+                        <div class="mt-4">
+                            <div class="flex items-center" id="password-validation">
+                                <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
+                                <span class="text-xs text-gray-600 dark:text-gray-400">Password requirements will be checked when you submit</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-end mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-key mr-2"></i>
+                                Update Password
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
     
-    <!-- Updated Profile Picture Modal -->
-    <div id="editProfileModal" class="modal hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div class="modal-content bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 max-w-md w-full mx-4">
-            <div class="flex justify-between items-center mb-4">
+    <!-- Profile Picture Upload Modal -->
+    <div id="profileModal" class="modal-backdrop hidden" style="display:none">
+        <div class="modal p-6">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-200 dark:border-gray-700 pb-3">
                 <h3 class="text-lg font-semibold flex items-center">
                     <i class="fas fa-camera text-blue-500 mr-2"></i>
                     Update Profile Picture
                 </h3>
-                <button class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" onclick="toggleEditProfile()">
+                <button type="button" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200" onclick="toggleProfileModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
             
             <form method="post" action="edit_student_info.php" enctype="multipart/form-data" id="profile-image-form">
-                <div class="flex flex-col items-center justify-center py-4">
-                    <div id="upload-area" class="upload-area w-full h-40 flex flex-col items-center justify-center mb-4">
-                        <div class="preview-container h-36 w-36 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                            <img id="imagePreview" src="" alt="Preview" class="h-full w-full object-cover hidden">
-                            <div id="previewPlaceholder" class="text-gray-500 dark:text-gray-400 text-center p-4">
-                                <i class="fas fa-cloud-upload-alt text-2xl mb-2"></i><br>
-                                Drag & drop image or click to browse
+                <div id="upload-area" class="upload-area mb-4">
+                    <div class="flex flex-col items-center justify-center p-4">
+                        <div class="w-32 h-32 rounded-full bg-gray-100 dark:bg-gray-700 overflow-hidden mb-4 relative">
+                            <img id="imagePreview" src="#" alt="Preview" class="h-full w-full object-cover hidden">
+                            <div id="previewPlaceholder" class="absolute inset-0 flex items-center justify-center text-center text-gray-400">
+                                <div>
+                                    <i class="fas fa-cloud-upload-alt text-3xl mb-2"></i>
+                                    <p class="text-sm">Image preview</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="flex flex-col items-center">
-                        <label for="profile_image" class="btn btn-primary cursor-pointer">
-                            <i class="fas fa-upload mr-2"></i>
-                            Select Image
-                        </label>
-                        <input type="file" id="profile_image" name="profile_image" required class="hidden" accept="image/*" onchange="previewImage(this)">
                         
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                            Supported formats: JPG, PNG, GIF (max 2MB)
-                        </p>
+                        <div class="flex flex-col items-center">
+                            <label for="profile_image" class="btn btn-primary cursor-pointer mb-2">
+                                <i class="fas fa-upload mr-2"></i>
+                                Select Image
+                            </label>
+                            <input type="file" id="profile_image" name="profile_image" required class="hidden" accept="image/*" onchange="previewImage(this)">
+                            
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
+                                Supported formats: JPG, PNG, GIF (max 2MB)
+                            </p>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="flex justify-end space-x-3 mt-4">
-                    <button type="button" onclick="toggleEditProfile()" 
-                        class="btn btn-outline">
+                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" class="btn btn-outline" onclick="toggleProfileModal()">
                         Cancel
                     </button>
-                    <button type="submit" id="upload-button"
-                        class="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                        Upload & Save
+                    <button type="submit" id="upload-button" class="btn btn-primary" disabled>
+                        <i class="fas fa-save mr-2"></i>
+                        Save New Picture
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="mt-8 py-6 border-t border-gray-200 dark:border-gray-800">
-        <div class="container mx-auto px-4">
-            <div class="text-center">
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    &copy; <?php echo date('Y'); ?> Student Portal | College of Computer Studies
-                </p>
-                <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
-                    Version 2.0
-                </p>
-            </div>
-        </div>
-    </footer>
-
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button').addEventListener('click', function() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+        });
+        
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.style.display = 'none';
         });
         
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
         const html = document.documentElement;
         
-        // Check for saved theme preference
+        // Check for saved theme preference or use system preference
+        const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         const savedTheme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         
-        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        if (savedTheme === 'dark' || (!savedTheme && darkModeMediaQuery.matches)) {
             html.classList.add('dark');
             darkModeToggle.checked = true;
         }
         
-        // Toggle theme when button is clicked
         darkModeToggle.addEventListener('change', function() {
             if (this.checked) {
                 html.classList.add('dark');
@@ -801,24 +1045,86 @@ $conn->close();
             }
         });
         
-        // Toggle profile picture edit modal
-        function toggleEditProfile() {
-            const modal = document.getElementById('editProfileModal');
-            modal.classList.toggle('hidden');
+        // Profile modal toggle
+        function toggleProfileModal() {
+            const modal = document.getElementById('profileModal');
             
-            // Prevent scrolling when modal is open
-            if (!modal.classList.contains('hidden')) {
-                document.body.style.overflow = 'hidden';
+            if (modal.classList.contains('hidden')) {
+                // Show modal
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex'; // Explicitly set display to flex
                 
-                // Reset form and preview
+                // Reset form when opening modal
                 document.getElementById('profile-image-form').reset();
                 document.getElementById('imagePreview').classList.add('hidden');
                 document.getElementById('previewPlaceholder').classList.remove('hidden');
                 document.getElementById('upload-button').disabled = true;
             } else {
-                document.body.style.overflow = 'auto';
+                // Hide modal
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
             }
         }
+
+        // Set up drag and drop for image upload
+        document.addEventListener('DOMContentLoaded', function() {
+            // IMPORTANT: Hide the modal immediately when the DOM loads - first priority
+            const profileModal = document.getElementById('profileModal');
+            profileModal.classList.add('hidden');
+            
+            // All other initialization code goes after
+            const uploadArea = document.getElementById('upload-area');
+            const fileInput = document.getElementById('profile_image');
+            
+            if (uploadArea) {
+                // Prevent default behavior for drag events
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }, false);
+                });
+                
+                // Add visual feedback when dragging
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, function() {
+                        uploadArea.classList.add('dragover');
+                    }, false);
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    uploadArea.addEventListener(eventName, function() {
+                        uploadArea.classList.remove('dragover');
+                    }, false);
+                });
+                
+                // Handle dropped files
+                uploadArea.addEventListener('drop', function(e) {
+                    fileInput.files = e.dataTransfer.files;
+                    previewImage(fileInput);
+                }, false);
+            }
+            
+            // Auto-hide messages after 5 seconds
+            setTimeout(function() {
+                const successMessage = document.getElementById('success-message');
+                const errorMessage = document.getElementById('error-message');
+                
+                if (successMessage) {
+                    successMessage.classList.add('opacity-0');
+                    successMessage.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => successMessage.classList.add('hidden'), 500);
+                }
+                
+                if (errorMessage) {
+                    errorMessage.classList.add('opacity-0');
+                    errorMessage.style.transition = 'opacity 0.5s ease';
+                    setTimeout(() => errorMessage.classList.add('hidden'), 500);
+                }
+            }, 5000);
+            
+            // ... existing code for password validation ...
+        });
         
         // Image preview functionality
         function previewImage(input) {
@@ -827,146 +1133,7 @@ $conn->close();
             const uploadButton = document.getElementById('upload-button');
             
             if (input.files && input.files[0]) {
-                // Validate file size
-                const maxSize = 2 * 1024 * 1024; // 2MB
-                if (input.files[0].size > maxSize) {
-                    alert('Image size must be less than 2MB.');
-                    input.value = '';
-                    return;
-                }
-                
-                // Validate file type
-                const fileType = input.files[0].type;
-                if (!fileType.match('image/jpeg') && !fileType.match('image/png') && !fileType.match('image/gif')) {
-                    alert('Only JPG, PNG and GIF images are allowed.');
-                    input.value = '';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
-                    placeholder.classList.add('hidden');
-                    uploadButton.disabled = false;
-                };
-                
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.classList.add('hidden');
-                placeholder.classList.remove('hidden');
-                uploadButton.disabled = true;
+                // ... existing code ...
             }
         }
-        
-        // Drag and drop functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadArea = document.getElementById('upload-area');
-            const fileInput = document.getElementById('profile_image');
-            
-            // Open file browser when clicking on the upload area
-            uploadArea.addEventListener('click', function() {
-                fileInput.click();
-            });
-            
-            // Prevent default behavior for drag events
-            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                }, false);
-            });
-            
-            // Add visual feedback when dragging
-            ['dragenter', 'dragover'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, function() {
-                    uploadArea.classList.add('dragover');
-                }, false);
-            });
-            
-            ['dragleave', 'drop'].forEach(eventName => {
-                uploadArea.addEventListener(eventName, function() {
-                    uploadArea.classList.remove('dragover');
-                }, false);
-            });
-            
-            // Handle dropped files
-            uploadArea.addEventListener('drop', function(e) {
-                fileInput.files = e.dataTransfer.files;
-                previewImage(fileInput);
-            }, false);
-            
-            // Auto-hide messages after 5 seconds
-            setTimeout(function() {
-                const successMessage = document.getElementById('success-message');
-                const errorMessage = document.getElementById('error-message');
-                
-                if (successMessage) {
-                    successMessage.style.opacity = '0';
-                    successMessage.style.transform = 'translateY(-10px)';
-                    successMessage.style.transition = 'opacity 0.5s, transform 0.5s';
-                    setTimeout(() => successMessage.classList.add('hidden'), 500);
-                }
-                
-                if (errorMessage) {
-                    errorMessage.style.opacity = '0';
-                    errorMessage.style.transform = 'translateY(-10px)';
-                    errorMessage.style.transition = 'opacity 0.5s, transform 0.5s';
-                    setTimeout(() => errorMessage.classList.add('hidden'), 500);
-                }
-            }, 5000);
-        });
-        
-        // Password validation
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordForm = document.getElementById('password-form');
-            const newPassword = document.getElementById('new_password');
-            const confirmPassword = document.getElementById('confirm_password');
-            const validationMessage = document.getElementById('password-validation');
-            
-            // Check passwords match when typing in confirm field
-            confirmPassword.addEventListener('input', function() {
-                if (newPassword.value && confirmPassword.value) {
-                    if (newPassword.value !== confirmPassword.value) {
-                        validationMessage.innerHTML = '<i class="fas fa-times-circle text-red-500 mr-2"></i><span class="text-xs text-red-600 dark:text-red-400">Passwords do not match</span>';
-                    } else {
-                        validationMessage.innerHTML = '<i class="fas fa-check-circle text-green-500 mr-2"></i><span class="text-xs text-green-600 dark:text-green-400">Passwords match</span>';
-                    }
-                }
-            });
-            
-            // Check password length when typing
-            newPassword.addEventListener('input', function() {
-                if (newPassword.value.length > 0 && newPassword.value.length < 8) {
-                    validationMessage.innerHTML = '<i class="fas fa-times-circle text-red-500 mr-2"></i><span class="text-xs text-red-600 dark:text-red-400">Password must be at least 8 characters</span>';
-                } else if (newPassword.value.length >= 8) {
-                    validationMessage.innerHTML = '<i class="fas fa-check-circle text-green-500 mr-2"></i><span class="text-xs text-green-600 dark:text-green-400">Password length is good</span>';
-                    
-                    // Also check if passwords match if confirm field has a value
-                    if (confirmPassword.value) {
-                        if (newPassword.value !== confirmPassword.value) {
-                            validationMessage.innerHTML = '<i class="fas fa-times-circle text-red-500 mr-2"></i><span class="text-xs text-red-600 dark:text-red-400">Passwords do not match</span>';
-                        } else {
-                            validationMessage.innerHTML = '<i class="fas fa-check-circle text-green-500 mr-2"></i><span class="text-xs text-green-600 dark:text-green-400">Passwords match</span>';
-                        }
-                    }
-                }
-            });
-            
-            // Form validation before submit
-            passwordForm.addEventListener('submit', function(e) {
-                if (newPassword.value !== confirmPassword.value) {
-                    e.preventDefault();
-                    validationMessage.innerHTML = '<i class="fas fa-times-circle text-red-500 mr-2"></i><span class="text-xs text-red-600 dark:text-red-400">Passwords do not match</span>';
-                    alert('Passwords do not match');
-                } else if (newPassword.value.length < 8) {
-                    e.preventDefault();
-                    validationMessage.innerHTML = '<i class="fas fa-times-circle text-red-500 mr-2"></i><span class="text-xs text-red-600 dark:text-red-400">Password must be at least 8 characters</span>';
-                    alert('Password must be at least 8 characters long');
-                }
-            });
-        });
-    </script>
-</body>
-</html>
+    </script></body></html>

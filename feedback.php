@@ -86,159 +86,391 @@ $conn->close();
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Dark mode variables - matching admin dashboard */
         :root {
-            --bg-primary: #f0f9ff;
-            --bg-secondary: #dbeafe;
-            --text-primary: #111827;
-            --text-secondary: #374151;
-            --card-bg: #ffffff;
-            --card-header: #bfdbfe;
-            --nav-bg: #ffffff;
-            --nav-text: #111827;
-            --nav-hover-bg: #3b82f6;
-            --nav-hover-text: #ffffff;
-            --button-primary: #3b82f6;
-            --button-hover: #2563eb;
-            --button-text: #ffffff;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --chart-bg: #ffffff;
-            --chart-text: #111827;
-            --announcement-bg: #ffffff;
-            --announcement-text: #111827;
-            --accent-blue: #3b82f6;
-            --accent-green: #10b981;
-            --accent-yellow: #f59e0b;
-            --border-color: #e5e7eb;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --text-primary: #334155;
+            --text-secondary: #64748b;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --accent-light: #dbeafe;
+            --sidebar-width: 280px;
+            --header-height: 64px;
+            --border-color: #e2e8f0;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --card-bg: #fff;
+            --section-title-color: #94a3b8;
         }
 
         .dark {
-            --bg-primary: #111827;
-            --bg-secondary: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #e5e7eb;
-            --card-bg: #1f2937;
-            --card-header: #2d3748;
-            --nav-bg: #111827;
-            --nav-text: #f9fafb;
-            --nav-hover-bg: #3b82f6;
-            --nav-hover-text: #ffffff;
-            --button-primary: #3b82f6;
-            --button-hover: #60a5fa;
-            --button-text: #f9fafb;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --chart-bg: #1f2937;
-            --chart-text: #f9fafb;
-            --announcement-bg: #1f2937;
-            --announcement-text: #f9fafb;
-            --accent-blue: #60a5fa;
-            --accent-green: #34d399;
-            --accent-yellow: #fbbf24;
-            --border-color: #374151;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --accent-light: #1e3a8a;
+            --accent-hover: #60a5fa;
+            --border-color: #334155;
+            --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+            --card-bg: #1e293b;
+            --section-title-color: #64748b;
         }
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            line-height: 1.5;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
         }
 
-        nav {
-            background-color: var(--nav-bg);
-            box-shadow: 0 2px 4px var(--shadow-color);
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
-        .nav-link {
-            color: var(--nav-text);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: all 0.2s ease;
+        .sidebar-header {
+            height: 70px;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             align-items: center;
-            font-weight: 500;
+            position: sticky;
+            top: 0;
+            background-color: var(--card-bg);
+            z-index: 10;
         }
-
-        .nav-link:hover {
-            background-color: var(--nav-hover-bg);
-            color: var(--nav-hover-text);
+        
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
-
-        .nav-link.active {
-            background-color: var(--button-primary);
-            color: var(--button-text);
+        
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .logo-text {
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: -0.01em;
+            color: var(--text-primary);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            padding: 16px 12px;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            text-transform: uppercase;
+            font-size: 12px;
             font-weight: 600;
+            color: var(--section-title-color);
+            letter-spacing: 0.05em;
+            padding: 0 12px;
+            margin-bottom: 8px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-weight: 500;
+            margin-bottom: 4px;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        
+        .nav-item:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .nav-item.active {
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .nav-item.active .nav-icon {
+            color: var(--accent-color);
+        }
+        
+        .user-section {
+            padding: 16px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        
+        .user-info:hover {
+            background-color: var(--bg-secondary);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-light);
+            color: var(--accent-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        .user-details {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .user-role {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
+        .main-content {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .topbar {
+            height: 70px;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 24px;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .page-title {
+            font-weight: 600;
+            font-size: 18px;
+            color: var(--text-primary);
+        }
+        
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 8px 16px;
+            width: 240px;
+        }
+        
+        .search-input {
+            border: none;
+            background: none;
+            color: var(--text-primary);
+            flex: 1;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        .search-icon {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-right: 8px;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+        }
+        
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-secondary);
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+        
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
+        
+        .content-area {
+            padding: 24px;
+            flex: 1;
+        }
+        
         .card {
             background-color: var(--card-bg);
-            transition: transform 0.3s, box-shadow 0.3s;
-            border-radius: 0.5rem;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 24px;
             border: 1px solid var(--border-color);
         }
 
         .card:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 15px var(--shadow-color);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
 
         .card-header {
-            background-color: var(--card-header);
-            padding: 1rem 1.5rem;
-            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 500;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
         .btn-primary {
-            background-color: var(--button-primary);
-            color: var(--button-text);
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            transition: background-color 0.2s;
-            font-weight: 500;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
         }
-
+        
         .btn-primary:hover {
-            background-color: var(--button-hover);
+            background-color: var (--accent-hover);
         }
         
-        /* Improved text styles for better readability */
-        h1, h2, h3, h4, h5, h6 {
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 0.5rem;
+        .btn-danger {
+            background-color: #ef4444;
+            color: white;
         }
         
-        p, li {
-            line-height: 1.6;
+        .btn-danger:hover {
+            background-color: #dc2626;
         }
         
-        /* Enhanced contrast for content */
-        .text-enhanced {
-            font-weight: 500;
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 20px;
+            cursor: pointer;
         }
         
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            line-height: 1.2;
-        }
-
-        /* Table styling */
-        table {
-            border-color: var(--border-color);
-        }
-        
-        table thead {
-            background-color: var(--table-header-bg);
-        }
-        
-        table tbody tr {
-            background-color: var(--card-bg);
-        }
-        
-        table tbody tr:hover {
-            background-color: var(--table-row-hover);
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 90;
         }
         
         /* Star rating display */
@@ -248,52 +480,6 @@ $conn->close();
         
         .star-filled {
             color: #ffb700;
-        }
-        
-        /* Toggle switch styling */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 52px;
-            height: 26px;
-        }
-        
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        
-        .toggle-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        
-        .toggle-slider:before {
-            position: absolute;
-            content: "";
-            height: 18px;
-            width: 18px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        
-        input:checked + .toggle-slider {
-            background-color: #3b82f6;
-        }
-        
-        input:checked + .toggle-slider:before {
-            transform: translateX(26px);
         }
         
         /* Rating category colors */
@@ -343,163 +529,176 @@ $conn->close();
             animation: fadeIn 0.5s ease-out forwards;
         }
         
-        /* Animation for hover effect */
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        .hover-pulse:hover {
-            animation: pulse 1s infinite;
-        }
-        
         /* Notifications */
         .notification {
             transition: opacity 0.5s ease-out;
         }
+        
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                position: fixed;
+                left: -280px;
+                z-index: 100;
+                box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                width: 100%;
+            }
+            
+            .menu-toggle {
+                display: block !important;
+            }
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
-    <!-- Navigation Bar - Updated to match admin dashboard -->
-    <nav class="sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="absolute inset-y-0 left-0 flex items-center sm:hidden">
-                    <button type="button" id="mobile-menu-button"
-                        class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
-                        <span class="sr-only">Open main menu</span>
-                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+<body>
+    <!-- Sidebar with categories -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <div class="logo-icon">
+                    <i class="fas fa-laptop-code"></i>
                 </div>
-                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center">
-                        <span class="text-xl font-bold hidden lg:block">Admin Portal</span>
-                    </div>
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space-x-4">
-                            <a href="admin_dashboard.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-home mr-2"></i> Dashboard
-                            </a>
-                            <a href="student_record.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-users mr-2"></i> Students
-                            </a>
-                            <a href="admin_reservation.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-calendar-check mr-2"></i> Reservations
-                            </a>
-                            <a href="sit_in_records.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
-                            </a>
-                            <a href="search_student.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-search mr-2"></i> Search
-                            </a>
-                            <a href="feedback.php"
-                                class="nav-link text-sm font-medium <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
-                                <i class="fas fa-comments mr-2"></i> Feedback
-                            </a>
-                        </div>
-                    </div>
+                <div class="logo-text">SIT-IN Admin</div>
+            </div>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-section">
+                <a href="admin_dashboard.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-tachometer-alt"></i></div>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Management</div>
+                <a href="student_record.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-user-graduate"></i></div>
+                    <span>Students</span>
+                </a>
+                <a href="admin_reservation.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <span>Reservations</span>
+                </a>
+                <a href="sit_in_records.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <span>Sit-in Records</span>
+                </a>
+                <a href="search_student.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-search"></i></div>
+                    <span>Search</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="section-title">Features</div>
+                <a href="schedule.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-calendar-week"></i></div>
+                    <span>Schedules</span>
+                </a>
+                <a href="feedback.php" class="nav-item <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
+                    <div class="nav-icon"><i class="fas fa-comments"></i></div>
+                    <span>Feedback</span>
+                </a>
+                <a href="resources.php" class="nav-item">
+                    <div class="nav-icon"><i class="fas fa-cube"></i></div>
+                    <span>Resources</span>
+                </a>
+            </div>
+        </div>
+        
+        <div class="user-section">
+            <div class="user-info">
+                <div class="user-avatar">A</div>
+                <div class="user-details">
+                    <div class="user-name">Admin User</div>
+                    <div class="user-role">System Administrator</div>
                 </div>
-                <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 space-x-3">
-                    <!-- Dark Mode Toggle -->
-                    <div class="flex items-center mr-4">
-                        <span class="mr-2 text-sm"><i class="fas fa-sun"></i></span>
-                        <label class="toggle-switch">
-                            <input type="checkbox" id="darkModeToggle">
-                            <span class="toggle-slider"></span>
-                        </label>
-                        <span class="ml-2 text-sm"><i class="fas fa-moon"></i></span>
-                    </div>
-                    
-                    <!-- Admin Logout -->
-                    <a href="admin_logout.php" 
-                       class="btn-primary flex items-center">
-                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                <div>
+                    <a href="admin_logout.php" title="Logout">
+                        <i class="fas fa-sign-out-alt text-gray-400 hover:text-red-500"></i>
                     </a>
                 </div>
             </div>
         </div>
-
-        <div class="sm:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="admin_dashboard.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-home mr-2"></i> Dashboard
-                </a>
-                <a href="student_record.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'student_record.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-users mr-2"></i> Students
-                </a>
-                <a href="admin_reservation.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'admin_reservation.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-calendar-check mr-2"></i> Reservations
-                </a>
-                <a href="sit_in_records.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'sit_in_records.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-clipboard-list mr-2"></i> Sit-in Records
-                </a>
-                <a href="search_student.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'search_student.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-search mr-2"></i> Search
-                </a>
-                <a href="feedback.php"
-                    class="nav-link block <?php echo basename($_SERVER['PHP_SELF']) == 'feedback.php' ? 'active' : ''; ?>">
-                    <i class="fas fa-comments mr-2"></i> Feedback
-                </a>
+    </div>
+    
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Main content area -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="flex items-center">
+                <button class="menu-toggle mr-4" id="menuToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1 class="page-title">Student Feedback</h1>
+            </div>
+            
+            <div class="topbar-actions">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" placeholder="Search feedback" class="search-input" id="searchInput">
+                </div>
+                
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <div class="container mx-auto p-6 flex-grow">
-        <div class="max-w-7xl mx-auto">
-            <h1 class="text-2xl font-bold mb-6 flex items-center animate-fadeIn">
-                <i class="fas fa-comments mr-3 text-blue-500"></i>
-                <span>Student Feedback</span>
-            </h1>
-            
-            <!-- Feedback Stats Cards - Improved visibility to match dashboard -->
+        
+        <div class="content-area">
+            <!-- Feedback Stats Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fadeIn">
                 <!-- Total Feedback -->
-                <div class="card shadow-lg">
-                    <div class="card-header bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
-                        <h3 class="text-lg font-semibold flex items-center">
-                            <i class="fas fa-comments mr-2 text-blue-500 dark:text-blue-400"></i>Total Feedback
-                        </h3>
-                    </div>
-                    <div class="p-6 text-center">
-                        <p class="stat-value text-blue-600 dark:text-blue-400"><?php echo $stats['total_feedback']; ?></p>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-2 font-medium">Total submissions</p>
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Total Feedback</h3>
+                            <div class="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center text-white">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100"><?php echo $stats['total_feedback']; ?></div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Total submissions</p>
                     </div>
                 </div>
                 
                 <!-- Average Rating -->
-                <div class="card shadow-lg">
-                    <div class="card-header bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
-                        <h3 class="text-lg font-semibold flex items-center">
-                            <i class="fas fa-star mr-2 text-green-500 dark:text-green-400"></i>Average Rating
-                        </h3>
-                    </div>
-                    <div class="p-6 text-center">
-                        <p class="stat-value text-green-600 dark:text-green-400"><?php echo number_format($stats['avg_rating'], 1); ?></p>
-                        <div class="flex justify-center mt-2">
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Average Rating</h3>
+                            <div class="w-10 h-10 rounded-lg bg-green-500 flex items-center justify-center text-white">
+                                <i class="fas fa-star"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100"><?php echo number_format($stats['avg_rating'], 1); ?></div>
+                        <div class="flex mt-1">
                             <?php
                             $avg_rating = round($stats['avg_rating'] * 2) / 2; // Round to nearest 0.5
                             for ($i = 1; $i <= 5; $i++) {
                                 if ($i <= $avg_rating) {
-                                    echo '<i class="fas fa-star text-yellow-400 mx-1"></i>';
+                                    echo '<i class="fas fa-star text-yellow-400 mr-1"></i>';
                                 } else if ($i - 0.5 == $avg_rating) {
-                                    echo '<i class="fas fa-star-half-alt text-yellow-400 mx-1"></i>';
+                                    echo '<i class="fas fa-star-half-alt text-yellow-400 mr-1"></i>';
                                 } else {
-                                    echo '<i class="far fa-star text-yellow-400 mx-1"></i>';
+                                    echo '<i class="far fa-star text-yellow-400 mr-1"></i>';
                                 }
                             }
                             ?>
@@ -508,87 +707,78 @@ $conn->close();
                 </div>
                 
                 <!-- Positive Feedback -->
-                <div class="card shadow-lg">
-                    <div class="card-header bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-200">
-                        <h3 class="text-lg font-semibold flex items-center">
-                            <i class="fas fa-thumbs-up mr-2 text-indigo-500 dark:text-indigo-400"></i>Positive Feedback
-                        </h3>
-                    </div>
-                    <div class="p-6 text-center">
-                        <p class="stat-value text-indigo-600 dark:text-indigo-400"><?php echo $stats['positive_feedback']; ?></p>
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Positive Feedback</h3>
+                            <div class="w-10 h-10 rounded-lg bg-indigo-500 flex items-center justify-center text-white">
+                                <i class="fas fa-thumbs-up"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100"><?php echo $stats['positive_feedback']; ?></div>
                         <?php $positive_percent = $stats['total_feedback'] > 0 ? round(($stats['positive_feedback'] / $stats['total_feedback']) * 100) : 0; ?>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-2 font-medium">
-                            <?php echo $positive_percent; ?>% of total feedback
-                        </p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo $positive_percent; ?>% of total feedback</p>
                     </div>
                 </div>
                 
                 <!-- Technical Issues -->
-                <div class="card shadow-lg">
-                    <div class="card-header bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200">
-                        <h3 class="text-lg font-semibold flex items-center">
-                            <i class="fas fa-exclamation-triangle mr-2 text-red-500 dark:text-red-400"></i>Technical Issues
-                        </h3>
-                    </div>
-                    <div class="p-6 text-center">
-                        <p class="stat-value text-red-600 dark:text-red-400"><?php echo $stats['issues_count']; ?></p>
+                <div class="card">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Technical Issues</h3>
+                            <div class="w-10 h-10 rounded-lg bg-red-500 flex items-center justify-center text-white">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="text-2xl font-bold text-gray-900 dark:text-gray-100"><?php echo $stats['issues_count']; ?></div>
                         <?php $issues_percent = $stats['total_feedback'] > 0 ? round(($stats['issues_count'] / $stats['total_feedback']) * 100) : 0; ?>
-                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-2 font-medium">
-                            <?php echo $issues_percent; ?>% reported issues
-                        </p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400"><?php echo $issues_percent; ?>% reported issues</p>
                     </div>
                 </div>
             </div>
             
-            <!-- Feedback Table - Improved visibility -->
-            <div class="card shadow-lg">
-                <div class="card-header flex justify-between items-center">
+            <!-- Feedback Table -->
+            <div class="card">
+                <div class="card-header">
                     <h2 class="text-lg font-bold flex items-center">
-                        <i class="fas fa-list mr-2 text-blue-500 dark:text-blue-400"></i>Student Feedback List
+                        <i class="fas fa-list mr-2 text-blue-500"></i>
+                        <span>Student Feedback List</span>
                     </h2>
-                    <div class="w-64">
-                        <div class="relative">
-                            <input type="text" id="searchInput" class="w-full px-4 py-2 pr-8 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white" placeholder="Search feedback...">
-                            <button type="button" class="absolute right-0 top-0 mt-2 mr-3 text-gray-400 dark:text-gray-300">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
                 </div>
                 <div class="p-6">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700" id="feedbackTable">
-                            <thead>
+                            <thead class="bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Student
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Lab #
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Session Date
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Rating
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Technical Issues
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Submitted
                                     </th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                 <?php if (empty($feedback_list)): ?>
                                 <tr>
                                     <td colspan="7" class="px-6 py-10 text-center">
                                         <div class="flex flex-col items-center">
-                                            <i class="far fa-comment-slash text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
+                                            <i class="far fa-comment-dots text-5xl opacity-30 mb-4 text-gray-400 dark:text-gray-500"></i>
                                             <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No feedback submissions yet</p>
                                             <p class="text-base text-gray-600 dark:text-gray-400">Student feedback will appear here</p>
                                         </div>
@@ -596,7 +786,7 @@ $conn->close();
                                 </tr>
                                 <?php else: ?>
                                     <?php foreach ($feedback_list as $feedback): ?>
-                                    <tr class="feedback-item hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                                    <tr class="feedback-item hover:bg-gray-50 dark:hover:bg-gray-700">
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex items-center">
                                                 <div class="flex-shrink-0 h-8 w-8 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center">
@@ -682,8 +872,8 @@ $conn->close();
             </div>
         </div>
     </div>
-    
-    <!-- Enhanced feedback details modal -->
+
+    <!-- Details Modal -->
     <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-xl w-full mx-4 max-h-screen overflow-y-auto">
             <div class="flex justify-between items-center border-b p-4 sticky top-0 bg-white dark:bg-gray-800 z-10">
@@ -693,6 +883,7 @@ $conn->close();
                 </button>
             </div>
             <div class="p-6">
+                <!-- Modal content will be populated by JavaScript -->
                 <div class="mb-6 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg">
                     <div class="flex items-center mb-4">
                         <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center text-blue-600 dark:text-blue-300 mr-4">
@@ -705,55 +896,9 @@ $conn->close();
                     </div>
                 </div>
                 
+                <!-- Additional modal content -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                        <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Lab Session</h5>
-                        <p class="text-base font-semibold text-gray-900 dark:text-white" id="modal-lab-number"></p>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                        <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Session Date</h5>
-                        <p class="text-base font-semibold text-gray-900 dark:text-white" id="modal-date"></p>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                        <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Session Time</h5>
-                        <p class="text-base font-semibold text-gray-900 dark:text-white">
-                            <span id="modal-login-time"></span> - <span id="modal-logout-time"></span>
-                        </p>
-                    </div>
-                    <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                        <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-1">Purpose</h5>
-                        <p class="text-base font-semibold text-gray-900 dark:text-white" id="modal-purpose"></p>
-                    </div>
-                </div>
-                
-                <div class="mb-6 bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg">
-                    <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Rating</h5>
-                    <div class="flex items-center">
-                        <div class="text-2xl font-bold mr-3 text-yellow-600 dark:text-yellow-400" id="modal-rating"></div>
-                        <div class="flex" id="modal-stars">
-                            <!-- Stars will be populated with JS -->
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="mb-6">
-                    <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Feedback Comments</h5>
-                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                        <p class="text-sm text-gray-800 dark:text-gray-200" id="modal-message">No comments provided</p>
-                    </div>
-                </div>
-                
-                <div id="issues-section" class="mb-6">
-                    <h5 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Technical Issues</h5>
-                    <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
-                        <div id="no-issues-text" class="text-sm text-gray-800 dark:text-gray-200">No technical issues reported</div>
-                        <div id="issues-text" class="hidden">
-                            <p class="text-sm font-medium mb-2 text-red-600 dark:text-red-400">
-                                <i class="fas fa-exclamation-circle mr-1"></i> The student reported technical issues
-                            </p>
-                            <p class="text-sm text-gray-800 dark:text-gray-200" id="modal-issues-description">No additional details provided</p>
-                        </div>
-                    </div>
+                    <!-- Content will be populated by JavaScript -->
                 </div>
                 
                 <div class="border-t pt-4 text-right">
@@ -765,7 +910,7 @@ $conn->close();
         </div>
     </div>
     
-    <!-- Delete Confirmation Modal - Enhanced for consistency -->
+    <!-- Delete Confirmation Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
             <div class="p-6">
@@ -773,7 +918,7 @@ $conn->close();
                     <i class="fas fa-exclamation-triangle text-5xl"></i>
                 </div>
                 <h3 class="text-xl font-medium text-center mb-2 text-gray-900 dark:text-white">Delete Feedback</h3>
-                <p class="text-center mb-6 text-gray-600 dark:text-gray-300">Are you sure you want to delete the feedback from <span id="delete-student-name" class="font-medium"></span>? This action cannot be undone.</p>
+                <p class="text-center mb-6 text-gray-600 dark:text-gray-300">Are you sure you want to delete this feedback? This action cannot be undone.</p>
                 <form id="deleteForm" method="POST" action="feedback.php" class="flex justify-center space-x-4">
                     <input type="hidden" id="delete-feedback-id" name="feedback_id">
                     <input type="hidden" name="delete_feedback" value="1">
@@ -788,7 +933,7 @@ $conn->close();
         </div>
     </div>
     
-    <!-- Success/Error Notification - Enhanced styling -->
+    <!-- Success/Error Notification -->
     <?php if (isset($_SESSION['delete_success'])): ?>
     <div id="successNotification" class="notification fixed top-4 right-4 bg-green-100 border-l-4 border-green-500 text-green-700 dark:bg-green-900/30 dark:border-green-500 dark:text-green-300 p-4 rounded shadow-md z-50">
         <div class="flex items-center">
@@ -814,189 +959,99 @@ $conn->close();
     </div>
     <?php unset($_SESSION['delete_error']); ?>
     <?php endif; ?>
-    
-    <!-- Footer - Improved visibility to match dashboard -->
-    <footer class="mt-auto py-4 border-t border-gray-200 dark:border-gray-800 bg-white/50 dark:bg-gray-900/50">
-        <div class="container mx-auto px-4">
-            <div class="text-center text-sm font-medium text-gray-700 dark:text-gray-300">
-                <p>&copy; <?php echo date('Y'); ?> Admin Portal. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
 
     <script>
-        // Initialize all interactive elements when DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            document.getElementById('mobile-menu-button').addEventListener('click', function() {
-                document.getElementById('mobile-menu').classList.toggle('hidden');
-            });
-            
-            // User dropdown toggle - if exists
-            const userMenuButton = document.getElementById('user-menu-button');
-            if (userMenuButton) {
-                userMenuButton.addEventListener('click', function() {
-                    document.getElementById('user-dropdown').classList.toggle('hidden');
-                });
-            }
-            
-            // Close dropdowns when clicking outside
-            window.addEventListener('click', function(e) {
-                const userMenu = document.getElementById('user-menu-button');
-                const userDropdown = document.getElementById('user-dropdown');
-                
-                if (userMenu && userDropdown && !userMenu.contains(e.target) && !userDropdown.contains(e.target)) {
-                    userDropdown.classList.add('hidden');
-                }
-            });
-            
-            // Dark mode toggle functionality
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const html = document.documentElement;
-            
-            // Check for saved theme preference or use system preference
-            const darkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            const savedTheme = localStorage.getItem('theme');
-            
-            if (savedTheme === 'dark' || (!savedTheme && darkModeMediaQuery.matches)) {
+        // Toggle mobile menu
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').style.display = 
+                document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+        });
+        
+        document.getElementById('overlay').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.remove('open');
+            this.style.display = 'none';
+        });
+        
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+            html.classList.add('dark');
+            darkModeToggle.checked = true;
+        }
+        
+        // Toggle theme when button is clicked
+        darkModeToggle.addEventListener('change', function() {
+            if (this.checked) {
                 html.classList.add('dark');
-                darkModeToggle.checked = true;
+                localStorage.setItem('theme', 'dark');
+            } else {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
             }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('keyup', function() {
+            const searchValue = this.value.toLowerCase().trim();
+            const rows = document.querySelectorAll('#feedbackTable tbody tr.feedback-item');
             
-            // Toggle theme when button is clicked
-            darkModeToggle.addEventListener('change', function() {
-                if (this.checked) {
-                    html.classList.add('dark');
-                    localStorage.setItem('theme', 'dark');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchValue)) {
+                    row.style.display = '';
                 } else {
-                    html.classList.remove('dark');
-                    localStorage.setItem('theme', 'light');
+                    row.style.display = 'none';
                 }
             });
-            
-            // Search functionality
-            document.getElementById('searchInput').addEventListener('keyup', function() {
-                const searchValue = this.value.toLowerCase().trim();
-                const rows = document.querySelectorAll('#feedbackTable tbody tr.feedback-item');
-                let visibleCount = 0;
+        });
+
+        // View feedback details button
+        document.querySelectorAll('.view-details').forEach(button => {
+            button.addEventListener('click', function() {
+                const feedbackData = JSON.parse(this.getAttribute('data-feedback'));
                 
-                rows.forEach(row => {
-                    const text = row.textContent.toLowerCase();
-                    if (text.includes(searchValue)) {
-                        row.style.display = '';
-                        visibleCount++;
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
+                // Populate modal with data
+                document.getElementById('modal-student-name').textContent = feedbackData.student_name;
+                document.getElementById('modal-student-id').textContent = feedbackData.id_number;
                 
-                // Show/hide no results message
-                const noResults = document.querySelector('#feedbackTable tbody tr:not(.feedback-item)');
-                if (rows.length > 0 && visibleCount === 0) {
-                    if (!noResults) {
-                        const tbody = document.querySelector('#feedbackTable tbody');
-                        tbody.innerHTML += `
-                            <tr id="noResultsRow">
-                                <td colspan="7" class="px-6 py-10 text-center">
-                                    <div class="flex flex-col items-center">
-                                        <i class="fas fa-search text-3xl text-gray-400 mb-3"></i>
-                                        <p class="text-gray-500 dark:text-gray-400">No matching feedback found</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    }
-                } else {
-                    const noResultsRow = document.getElementById('noResultsRow');
-                    if (noResultsRow) noResultsRow.remove();
-                }
+                // Show modal
+                document.getElementById('detailsModal').classList.remove('hidden');
             });
-            
-            // FIXED: View feedback details button
-            document.querySelectorAll('.view-details').forEach(button => {
-                button.addEventListener('click', function() {
-                    try {
-                        const feedbackData = JSON.parse(this.getAttribute('data-feedback'));
-                        
-                        // Populate modal with data
-                        document.getElementById('modal-student-name').textContent = feedbackData.student_name;
-                        document.getElementById('modal-student-id').textContent = feedbackData.id_number;
-                        document.getElementById('modal-lab-number').textContent = 'Lab ' + feedbackData.lab_number;
-                        document.getElementById('modal-date').textContent = feedbackData.date;
-                        document.getElementById('modal-login-time').textContent = feedbackData.login_time;
-                        document.getElementById('modal-logout-time').textContent = feedbackData.logout_time;
-                        document.getElementById('modal-purpose').textContent = feedbackData.purpose || 'Not specified';
-                        document.getElementById('modal-rating').textContent = feedbackData.rating + '/5';
-                        
-                        const starsContainer = document.getElementById('modal-stars');
-                        starsContainer.innerHTML = '';
-                        for (let i = 1; i <= 5; i++) {
-                            const star = document.createElement('i');
-                            star.className = i <= feedbackData.rating ? 'fas fa-star text-yellow-400' : 'far fa-star text-yellow-400';
-                            starsContainer.appendChild(star);
-                        }
-                        
-                        document.getElementById('modal-message').textContent = feedbackData.feedback_message || 'No comments provided';
-                        
-                        // Handle technical issues section
-                        if (feedbackData.had_technical_issues) {
-                            document.getElementById('no-issues-text').classList.add('hidden');
-                            document.getElementById('issues-text').classList.remove('hidden');
-                            document.getElementById('modal-issues-description').textContent = feedbackData.issues_description || 'No additional details provided';
-                        } else {
-                            document.getElementById('no-issues-text').classList.remove('hidden');
-                            document.getElementById('issues-text').classList.add('hidden');
-                        }
-                        
-                        // Show modal
-                        document.getElementById('detailsModal').classList.remove('hidden');
-                    } catch (error) {
-                        console.error("Error processing feedback data:", error);
-                    }
-                });
+        });
+        
+        // Close modal buttons
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('detailsModal').classList.add('hidden');
             });
-            
-            // Close modal events
-            document.querySelectorAll('.close-modal').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.getElementById('detailsModal').classList.add('hidden');
-                });
+        });
+        
+        // Delete feedback functionality
+        document.querySelectorAll('.delete-feedback').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const studentName = this.getAttribute('data-name');
+                
+                // Set values in the delete modal
+                document.getElementById('delete-feedback-id').value = id;
+                document.getElementById('delete-student-name').textContent = studentName;
+                
+                // Show the delete modal
+                document.getElementById('deleteModal').classList.remove('hidden');
             });
-            
-            // Close modal when clicking outside
-            document.getElementById('detailsModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                }
-            });
-            
-            // FIXED: Delete feedback functionality
-            document.querySelectorAll('.delete-feedback').forEach(button => {
-                button.addEventListener('click', function() {
-                    const id = this.getAttribute('data-id');
-                    const studentName = this.getAttribute('data-name');
-                    
-                    // Set values in the delete modal
-                    document.getElementById('delete-feedback-id').value = id;
-                    document.getElementById('delete-student-name').textContent = studentName;
-                    
-                    // Show the delete modal
-                    document.getElementById('deleteModal').classList.remove('hidden');
-                });
-            });
-            
-            // Cancel delete button
-            document.querySelectorAll('.cancel-delete').forEach(button => {
-                button.addEventListener('click', function() {
-                    document.getElementById('deleteModal').classList.add('hidden');
-                });
-            });
-            
-            // Close delete modal when clicking outside
-            document.getElementById('deleteModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
-                }
+        });
+        
+        // Cancel delete button
+        document.querySelectorAll('.cancel-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                document.getElementById('deleteModal').classList.add('hidden');
             });
         });
         
@@ -1007,18 +1062,14 @@ $conn->close();
         if (successNotification) {
             setTimeout(() => {
                 successNotification.style.opacity = '0';
-                setTimeout(() => {
-                    successNotification.remove();
-                }, 500);
+                setTimeout(() => successNotification.remove(), 500);
             }, 3000);
         }
         
         if (errorNotification) {
             setTimeout(() => {
                 errorNotification.style.opacity = '0';
-                setTimeout(() => {
-                    errorNotification.remove();
-                }, 500);
+                setTimeout(() => errorNotification.remove(), 500);
             }, 3000);
         }
     </script>
