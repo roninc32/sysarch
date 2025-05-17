@@ -59,6 +59,19 @@ $lab_stats = $result_lab_numbers->fetch_all(MYSQLI_ASSOC);
 
 $lab_data = json_encode($lab_stats);
 
+// Fetch leaderboard data
+$sql_leaderboard = "SELECT id_number, first_name, last_name, points 
+                   FROM users 
+                   ORDER BY points DESC 
+                   LIMIT 10";
+$result_leaderboard = $conn->query($sql_leaderboard);
+$leaderboard = [];
+if ($result_leaderboard->num_rows > 0) {
+    while ($row = $result_leaderboard->fetch_assoc()) {
+        $leaderboard[] = $row;
+    }
+}
+
 // Handle announcement creation with prepared statements
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['create_announcement'])) {
     $content = trim($_POST['content']);
@@ -1264,40 +1277,50 @@ $conn->close();
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Charts Section -->
-            <div class="panels-grid">
+
+                <!-- Student Leaderboard Panel -->
                 <div class="panel">
                     <div class="panel-header">
                         <h2 class="panel-title">
-                            <i class="fas fa-chart-pie"></i>
-                            <span>Language Distribution</span>
+                            <i class="fas fa-trophy"></i>
+                            <span>Student Leaderboard</span>
                         </h2>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="languagePieChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title">
-                            <i class="fas fa-chart-bar"></i>
-                            <span>Laboratory Usage</span>
-                        </h2>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="laboratoryBarChart"></canvas>
+                    
+                    <div class="panel-content">
+                        <?php if (empty($leaderboard)): ?>
+                            <div class="text-center py-10">
+                                <i class="fas fa-chart-bar text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
+                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No leaderboard data</p>
+                                <p class="text-base text-gray-600 dark:text-gray-400">Students will appear here as they earn points</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="space-y-2">
+                                <?php foreach ($leaderboard as $index => $student): ?>
+                                    <div class="flex items-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
+                                        <div class="w-8 h-8 flex items-center justify-center rounded-full <?php 
+                                            if ($index === 0) echo 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300'; 
+                                            elseif ($index === 1) echo 'bg-gray-100 text-gray-800 dark:bg-gray-700/50 dark:text-gray-300';
+                                            elseif ($index === 2) echo 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300';
+                                            else echo 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400';
+                                        ?> font-semibold mr-3">
+                                            <?php echo $index + 1; ?>
+                                        </div>
+                                        <div class="flex-1">
+                                            <span class="font-medium text-sm"><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></span>
+                                            <span class="ml-2 text-xs text-gray-500">#<?php echo htmlspecialchars($student['id_number']); ?></span>
+                                        </div>
+                                        <div class="font-semibold text-sm text-blue-600 dark:text-blue-400"><?php echo $student['points']; ?> pts</div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Add Chart.js before the existing script tag -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script>
         // Toggle mobile menu
         document.getElementById('menuToggle').addEventListener('click', function() {
@@ -1310,12 +1333,6 @@ $conn->close();
             document.getElementById('sidebar').classList.remove('open');
             this.style.display = 'none';
         });
-        
-        // Announcement form toggle
-        function showAnnouncementForm() {
-            const form = document.getElementById('announcementForm');
-            form.classList.toggle('hidden');
-        }
         
         // Dark mode toggle
         const darkModeToggle = document.getElementById('darkModeToggle');
@@ -1338,253 +1355,26 @@ $conn->close();
                 html.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
             }
-            
-            updateChartsTheme();
         });
-        
-        // Edit announcement functionality
+
+        // Announcement form toggle
+        function showAnnouncementForm() {
+            const form = document.getElementById('announcementForm');
+            form.classList.toggle('hidden');
+        }
+
+        // Edit announcement
         function editAnnouncement(id, content) {
-            // Create modal backdrop
-            const backdrop = document.createElement('div');
-            backdrop.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
-            backdrop.id = 'editModal';
+            const form = document.getElementById('announcementForm');
+            form.classList.remove('hidden');
+            document.getElementById('content').value = content;
             
-            // Create modal content
-            const modal = document.createElement('div');
-            modal.className = 'bg-white dark:bg-gray-800 rounded-lg p-6 max-w-lg w-full mx-4 shadow-xl border border-gray-200 dark:border-gray-700';
-            modal.innerHTML = `
-                <h3 class="text-xl font-bold mb-4 border-b pb-3 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white">Edit Announcement</h3>
-                <form id="editForm" method="POST" action="admin_dashboard.php">
-                    <input type="hidden" name="id" value="${id}">
-                    <div class="mb-6">
-                        <label for="editContent" class="block text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">Content</label>
-                        <textarea id="editContent" name="content" rows="8" 
-                            class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg 
-                            bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-base focus:ring-2 focus:ring-blue-500 focus:border-blue-500">${content}</textarea>
-                    </div>
-                    <div class="flex justify-end space-x-4">
-                        <button type="button" class="px-5 py-2 border border-gray-300 dark:border-gray-600 
-                            rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 font-medium text-gray-800 dark:text-white" onclick="closeEditModal()">
-                            Cancel
-                        </button>
-                        <button type="submit" name="edit_announcement" class="bg-blue-500 hover:bg-blue-600 
-                            text-white px-5 py-2 rounded-md transition-colors font-medium">
-                            Save Changes
-                        </button>
-                    </div>
-                </form>
-            `;
-            
-            backdrop.appendChild(modal);
-            document.body.appendChild(backdrop);
-            
-            backdrop.addEventListener('click', function(e) {
-                if (e.target === backdrop) {
-                    closeEditModal();
-                }
-            });
-            
-            setTimeout(() => {
-                document.getElementById('editContent').focus();
-            }, 100);
+            // Update form for editing
+            const formEl = form.querySelector('form');
+            formEl.innerHTML += `<input type="hidden" name="id" value="${id}">`;
+            formEl.querySelector('button[type="submit"]').name = 'edit_announcement';
+            formEl.querySelector('button[type="submit"]').innerHTML = '<i class="fas fa-save"></i><span>Update</span>';
         }
-        
-        function closeEditModal() {
-            const modal = document.getElementById('editModal');
-            if (modal) {
-                document.body.removeChild(modal);
-            }
-        }
-
-        function updateChartsTheme() {
-            // Get current theme
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            
-            // Update chart theme colors
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
-            const textColor = isDarkMode ? '#e5e7eb' : '#111827';
-            const fontSize = 14;
-            
-            // Update and re-render charts
-            if (window.laboratoryChart) {
-                window.laboratoryChart.options.scales.x.grid.color = gridColor;
-                window.laboratoryChart.options.scales.y.grid.color = gridColor;
-                window.laboratoryChart.options.scales.x.ticks.color = textColor;
-                window.laboratoryChart.options.scales.y.ticks.color = textColor;
-                window.laboratoryChart.options.scales.x.ticks.font = { size: fontSize, weight: 'bold' };
-                window.laboratoryChart.options.scales.y.ticks.font = { size: fontSize, weight: 'bold' };
-                window.laboratoryChart.update();
-            }
-            
-            if (window.languageChart) {
-                window.languageChart.options.plugins.legend.labels.color = textColor;
-                window.languageChart.options.plugins.legend.labels.font = { size: fontSize, weight: 'bold' };
-                window.languageChart.update();
-            }
-        }
-        
-        // Chart initialization
-        document.addEventListener('DOMContentLoaded', function() {
-            const laboratoryStats = <?php echo $lab_data; ?>;
-            const languageStats = <?php echo $language_data; ?>;
-            
-            // Get current theme
-            const isDarkMode = document.documentElement.classList.contains('dark');
-            const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.2)' : 'rgba(0, 0, 0, 0.1)';
-            const textColor = isDarkMode ? '#e5e7eb' : '#111827';
-            
-            // Lab data
-            const labLabels = laboratoryStats.map(item => `Lab ${item.lab_number}`);
-            const labData = laboratoryStats.map(item => item.count);
-            
-            // Language data
-            const languageLabels = languageStats.map(item => item.sit_in_purpose);
-            const languageData = languageStats.map(item => item.count);
-            
-            // Colors with higher saturation for better visibility
-            const colors = [
-                '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
-                '#EC4899', '#06B6D4', '#6366F1', '#D946EF', '#F97316'
-            ];
-            
-            // Extend colors array if needed
-            const getColors = (count) => {
-                if (count <= colors.length) return colors.slice(0, count);
-                return Array(count).fill().map(() => `#${Math.floor(Math.random()*16777215).toString(16).padStart(6, '0')}`);
-            };
-            
-            // Bar Chart with theme support and better visibility
-            window.laboratoryChart = new Chart(document.getElementById('laboratoryBarChart'), {
-                type: 'bar',
-                data: {
-                    labels: labLabels,
-                    datasets: [{
-                        label: 'Number of Sessions',
-                        data: labData,
-                        backgroundColor: getColors(labLabels.length),
-                        borderColor: isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: isDarkMode ? '#1F2937' : 'white',
-                            titleColor: isDarkMode ? '#F9FAFB' : '#111827',
-                            bodyColor: isDarkMode ? '#F3F4F6' : '#374151',
-                            borderColor: isDarkMode ? '#374151' : '#E5E7EB',
-                            borderWidth: 1,
-                            padding: 12,
-                            bodyFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            titleFont: {
-                                size: 16,
-                                weight: 'bold'
-                            }
-                        }
-                    },
-                    scales: {
-                        x: {
-                            grid: {
-                                color: gridColor,
-                                lineWidth: 1
-                            },
-                            ticks: {
-                                color: textColor,
-                                font: {
-                                    size: 12,
-                                    weight: 'bold'
-                                }
-                            }
-                        },
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                color: gridColor,
-                                lineWidth: 1
-                            },
-                            ticks: {
-                                color: textColor,
-                                precision: 0,
-                                stepSize: 1,
-                                font: {
-                                    size: 12,
-                                    weight: 'bold'
-                                }
-                            }
-                        }
-                    }
-                }
-            });
-
-            // Pie Chart with theme support and better visibility
-            window.languageChart = new Chart(document.getElementById('languagePieChart'), {
-                type: 'pie',
-                data: {
-                    labels: languageLabels,
-                    datasets: [{
-                        data: languageData,
-                        backgroundColor: getColors(languageLabels.length),
-                        borderColor: isDarkMode ? '#1F2937' : '#FFFFFF',
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: textColor,
-                                font: {
-                                    size: 12,
-                                    weight: 'bold'
-                                },
-                                padding: 20,
-                                usePointStyle: true,
-                                boxWidth: 10
-                            }
-                        },
-                        tooltip: {
-                            backgroundColor: isDarkMode ? '#1F2937' : 'white',
-                            titleColor: isDarkMode ? '#F9FAFB' : '#111827',
-                            bodyColor: isDarkMode ? '#F3F4F6' : '#374151',
-                            borderColor: isDarkMode ? '#374151' : '#E5E7EB',
-                            borderWidth: 1,
-                            padding: 12,
-                            bodyFont: {
-                                size: 14,
-                                weight: 'bold'
-                            },
-                            titleFont: {
-                                size: 16,
-                                weight: 'bold'
-                            }
-                        }
-                    }
-                }
-            });
-        });
-        
-        // Notification bell click to scroll to notifications panel
-        document.querySelector('.notification-bell').addEventListener('click', function() {
-            const notificationPanel = document.querySelector('.panel-title i.fas.fa-bell').closest('.panel');
-            notificationPanel.scrollIntoView({ behavior: 'smooth' });
-            
-            // Highlight the panel briefly
-            notificationPanel.classList.add('ring-2', 'ring-accent-color', 'ring-opacity-50');
-            setTimeout(() => {
-                notificationPanel.classList.remove('ring-2', 'ring-accent-color', 'ring-opacity-50');
-            }, 2000);
-        });
     </script>
 </body>
 </html>

@@ -132,6 +132,8 @@ if (empty($labs)) {
     $labs = ['524', '526', '528', '530', 'MAC Laboratory'];
 }
 
+$default_labs = ['524', '526', '528', '530', 'MAC Laboratory'];
+
 $conn->close();
 ?>
 
@@ -1008,7 +1010,7 @@ $conn->close();
                         <div>
                             <label for="lab_number" class="block text-sm font-medium mb-2">Laboratory</label>
                             <select id="lab_number" name="lab_number" required class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
-                                <?php foreach ($labs as $lab): ?>
+                                <?php foreach ($default_labs as $lab): ?>
                                 <option value="<?php echo $lab; ?>">Lab <?php echo $lab; ?></option>
                                 <?php endforeach; ?>
                             </select>
@@ -1281,3 +1283,5 @@ $conn->close();
     </script>
 </body>
 </html>
+</html>
+

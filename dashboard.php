@@ -39,19 +39,6 @@ if ($result_sessions->num_rows > 0) {
     $sessions_left = "N/A";
 }
 
-// Fetch leaderboard data (top 10 students by points)
-$sql_leaderboard = "SELECT id_number, first_name, last_name, points 
-                   FROM users 
-                   ORDER BY points DESC 
-                   LIMIT 10";
-$result_leaderboard = $conn->query($sql_leaderboard);
-$leaderboard = [];
-if ($result_leaderboard->num_rows > 0) {
-    while ($row = $result_leaderboard->fetch_assoc()) {
-        $leaderboard[] = $row;
-    }
-}
-
 // Fetch announcements
 $sql_announcements = "SELECT * FROM announcements ORDER BY created_at DESC";
 $result_announcements = $conn->query($sql_announcements);
@@ -860,78 +847,33 @@ $conn->close();
             </div>
             
             <!-- Content Panels -->
-            <div class="panels-grid">
-                <!-- Announcements Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title">
-                            <i class="fas fa-bullhorn"></i>
-                            <span>Announcements</span>
-                        </h2>
-                    </div>
-                    
-                    <div class="panel-content">
-                        <!-- Announcements List -->
-                        <div class="announcement-list">
-                            <?php if (empty($announcements)): ?>
-                                <div class="text-center py-10">
-                                    <i class="far fa-bell-slash text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
-                                    <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No announcements yet</p>
-                                    <p class="text-base text-gray-600 dark:text-gray-400">Check back later for updates</p>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($announcements as $announcement): ?>
-                                    <div class="announcement-item">
-                                        <h3 class="announcement-title"><?php echo isset($announcement['title']) ? htmlspecialchars($announcement['title']) : 'Announcement'; ?></h3>
-                                        <div class="announcement-content"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></div>
-                                        <div class="announcement-footer">
-                                            <span><?php echo date('F j, Y', strtotime($announcement['created_at'])); ?></span>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
+            <div class="panel mb-6">
+                <div class="panel-header">
+                    <h2 class="panel-title">
+                        <i class="fas fa-bullhorn"></i>
+                        <span>Announcements</span>
+                    </h2>
                 </div>
                 
-                <!-- Leaderboard Panel -->
-                <div class="panel">
-                    <div class="panel-header">
-                        <h2 class="panel-title">
-                            <i class="fas fa-trophy"></i>
-                            <span>Leaderboard</span>
-                        </h2>
-                    </div>
-                    
-                    <div class="panel-content">
-                        <?php if (empty($leaderboard)): ?>
+                <div class="panel-content">
+                    <!-- Announcements List -->
+                    <div class="announcement-list">
+                        <?php if (empty($announcements)): ?>
                             <div class="text-center py-10">
-                                <i class="fas fa-chart-bar text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
-                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No leaderboard data</p>
-                                <p class="text-base text-gray-600 dark:text-gray-400">Check back later</p>
+                                <i class="far fa-bell-slash text-5xl opacity-50 mb-4 text-gray-400 dark:text-gray-500"></i>
+                                <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">No announcements yet</p>
+                                <p class="text-base text-gray-600 dark:text-gray-400">Check back later for updates</p>
                             </div>
                         <?php else: ?>
-                            <div class="space-y-2">
-                                <?php foreach ($leaderboard as $index => $student): ?>
-                                    <div class="flex items-center p-3 rounded-lg <?php echo $student['id_number'] == $id_number ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-gray-50 dark:bg-gray-800/50'; ?>">
-                                        <div class="w-8 h-8 flex items-center justify-center rounded-full <?php 
-                                            if ($index === 0) echo 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-300'; 
-                                            elseif ($index === 1) echo 'bg-gray-100 text-gray-800 dark:bg-gray-700/50 dark:text-gray-300';
-                                            elseif ($index === 2) echo 'bg-amber-100 text-amber-800 dark:bg-amber-900/20 dark:text-amber-300';
-                                            else echo 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400';
-                                        ?> font-semibold mr-3">
-                                            <?php echo $index + 1; ?>
-                                        </div>
-                                        <div class="flex-1">
-                                            <span class="font-medium text-sm"><?php echo htmlspecialchars($student['first_name'] . ' ' . $student['last_name']); ?></span>
-                                            <?php if ($student['id_number'] == $id_number): ?>
-                                                <span class="ml-2 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 px-2 py-1 rounded-full">You</span>
-                                            <?php endif; ?>
-                                        </div>
-                                        <div class="font-semibold text-sm text-blue-600 dark:text-blue-400"><?php echo $student['points']; ?> pts</div>
+                            <?php foreach ($announcements as $announcement): ?>
+                                <div class="announcement-item">
+                                    <h3 class="announcement-title"><?php echo isset($announcement['title']) ? htmlspecialchars($announcement['title']) : 'Announcement'; ?></h3>
+                                    <div class="announcement-content"><?php echo nl2br(htmlspecialchars($announcement['content'])); ?></div>
+                                    <div class="announcement-footer">
+                                        <span><?php echo date('F j, Y', strtotime($announcement['created_at'])); ?></span>
                                     </div>
-                                <?php endforeach; ?>
-                            </div>
+                                </div>
+                            <?php endforeach; ?>
                         <?php endif; ?>
                     </div>
                 </div>

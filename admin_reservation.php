@@ -49,6 +49,38 @@ if (isset($_POST['update_reservation'])) {
     }
 }
 
+// Handle reservation approval with notifications
+if (isset($_GET['action']) && $_GET['action'] == 'approve' && isset($_GET['id'])) {
+    $id = (int)$_GET['id'];
+    
+    // Begin transaction
+    $conn->begin_transaction();
+    try {
+        // Update reservation status to approved
+        $sql_update = "UPDATE sitin_reservation SET status = 'approved' WHERE id = ?";
+        $stmt = $conn->prepare($sql_update);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        
+        // Set viewed = 0 to create a notification for the student
+        $sql_notify = "UPDATE sitin_reservation SET viewed = 0 WHERE id = ?";
+        $stmt = $conn->prepare($sql_notify);
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        
+        $conn->commit();
+        $_SESSION['message'] = "Reservation approved successfully";
+        $_SESSION['message_type'] = "success";
+    } catch (Exception $e) {
+        $conn->rollback();
+        $_SESSION['message'] = "Error approving reservation: " . $e->getMessage();
+        $_SESSION['message_type'] = "danger";
+    }
+    
+    header("Location: admin_reservation.php");
+    exit();
+}
+
 // Get available labs - Ensure all five labs are always included
 $default_labs = ['524', '526', '528', '530', 'MAC Laboratory'];
 
